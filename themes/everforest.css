@@ -190,34 +190,100 @@ textarea,
   background-color: transparent;
 }
 
-/* Sakura: Soft pink accents and a blossom-dusk sidebar. Generated from scripts/themes.mjs. */
+/* Everforest: Soft forest greens that are easy on the eyes. Generated from scripts/themes.mjs. */
+
 :root,
 .light {
-  --bbb-accent: oklch(0.58 0.17 355);
-  --primary: oklch(0.55 0.19 355);
+  --canvas: #fdf6e3;
+  --ink: #5c6a72;
+  --card: color-mix(in srgb, #ffffff 55%, #fdf6e3);
+  --popover: color-mix(in srgb, #ffffff 65%, #fdf6e3);
+  --secondary: color-mix(in srgb, #5c6a72 5%, #fdf6e3);
+  --muted: color-mix(in srgb, #5c6a72 5%, #fdf6e3);
+  --accent: color-mix(in srgb, #5c6a72 8%, #fdf6e3);
+  --border: color-mix(in srgb, #5c6a72 14%, #fdf6e3);
+  --border-hairline: color-mix(in srgb, #5c6a72 14%, #fdf6e3);
+  --border-seam: color-mix(in srgb, #5c6a72 12%, #fdf6e3);
+  --input: color-mix(in srgb, #5c6a72 22%, #fdf6e3);
+  --sidebar: #f4f0d9;
+  --sidebar-foreground: #5c6a72;
+  --sidebar-accent: color-mix(in srgb, #5c6a72 8%, #f4f0d9);
+  --sidebar-border: color-mix(in srgb, #5c6a72 12%, #f4f0d9);
+  --surface-selected: color-mix(in srgb, #5c6a72 9%, #f4f0d9);
+  --surface-selected-border: color-mix(in srgb, #5c6a72 16%, #f4f0d9);
+  --muted-foreground: #829181;
+  --primary: #8da101;
   --primary-foreground: #ffffff;
-  --file-accent: oklch(0.55 0.19 355);
+  --file-accent: #8da101;
+  --bbb-accent: #8da101;
+  --destructive: #f85552;
+  --destructive-text: #f85552;
+  --warning: #dfa000;
+  --warning-text: #dfa000;
+  --attention: #dfa000;
+  --success: #8da101;
+  --diff-added: #8da101;
+  --diff-removed: #f85552;
 }
+
+:root:not(.dark) [data-sidebar="sidebar"]::before {
+  background:
+    radial-gradient(80% 60% at 80% 0%, color-mix(in srgb, #35a77c 30%, transparent), transparent 70%),
+    radial-gradient(70% 50% at 10% 75%, color-mix(in srgb, #8da101 22%, transparent), transparent 70%),
+    linear-gradient(to bottom, color-mix(in srgb, #8da101 18%, #f4f0d9), #f4f0d9 70%, transparent);
+}
+
 .dark {
-  --bbb-accent: oklch(0.8 0.1 355);
-  --primary: oklch(0.76 0.12 355);
-  --primary-foreground: #0a0a0a;
-  --file-accent: oklch(0.8 0.1 355);
-}
-html:not(.dark),
-html .light {
-  --bb-sidebar-tone-working: oklch(0.58 0.17 355);
-  --bb-sidebar-tone-pending: oklch(0.58 0.17 355);
-}
-html.dark,
-html .dark {
-  --bb-sidebar-tone-working: oklch(0.8 0.1 355);
-  --bb-sidebar-tone-pending: oklch(0.8 0.1 355);
+  --canvas: #2d353b;
+  --ink: #d3c6aa;
+  --card: color-mix(in srgb, #d3c6aa 4%, #2d353b);
+  --popover: color-mix(in srgb, #d3c6aa 5%, #2d353b);
+  --secondary: color-mix(in srgb, #d3c6aa 4%, #2d353b);
+  --muted: color-mix(in srgb, #d3c6aa 4%, #2d353b);
+  --accent: color-mix(in srgb, #d3c6aa 6%, #2d353b);
+  --border: color-mix(in srgb, #d3c6aa 9%, #2d353b);
+  --border-hairline: color-mix(in srgb, #d3c6aa 9%, #2d353b);
+  --border-seam: color-mix(in srgb, #d3c6aa 8%, #2d353b);
+  --input: color-mix(in srgb, #d3c6aa 14%, #2d353b);
+  --sidebar: #272e33;
+  --sidebar-foreground: #d3c6aa;
+  --sidebar-accent: color-mix(in srgb, #d3c6aa 6%, #272e33);
+  --sidebar-border: color-mix(in srgb, #d3c6aa 8%, #272e33);
+  --surface-selected: color-mix(in srgb, #d3c6aa 7%, #272e33);
+  --surface-selected-border: color-mix(in srgb, #d3c6aa 12%, #272e33);
+  --muted-foreground: #9da9a0;
+  --primary: #a7c080;
+  --primary-foreground: #2d353b;
+  --file-accent: #a7c080;
+  --bbb-accent: #a7c080;
+  --destructive: #e67e80;
+  --destructive-text: #e67e80;
+  --warning: #dbbc7f;
+  --warning-text: #dbbc7f;
+  --attention: #dbbc7f;
+  --success: #a7c080;
+  --diff-added: #a7c080;
+  --diff-removed: #e67e80;
 }
 
 .dark [data-sidebar="sidebar"]::before {
   background:
-    radial-gradient(80% 60% at 80% 0%, oklch(0.6 0.18 0 / 45%), transparent 70%),
-    radial-gradient(70% 50% at 10% 75%, oklch(0.55 0.12 320 / 35%), transparent 70%),
-    linear-gradient(to bottom, oklch(0.25 0.09 350), oklch(0.18 0.05 330) 60%, oklch(0.18 0.05 330 / 0%));
+    radial-gradient(80% 60% at 80% 0%, color-mix(in srgb, #83c092 38%, transparent), transparent 70%),
+    radial-gradient(70% 50% at 10% 75%, color-mix(in srgb, #a7c080 28%, transparent), transparent 70%),
+    linear-gradient(to bottom, color-mix(in srgb, #a7c080 22%, #272e33), #272e33 70%, transparent);
+}
+
+.dark [data-sidebar="sidebar"]::after {
+  display: none;
+}
+
+html:not(.dark),
+html .light {
+  --bb-sidebar-tone-working: #8da101;
+  --bb-sidebar-tone-pending: #8da101;
+}
+html.dark,
+html .dark {
+  --bb-sidebar-tone-working: #a7c080;
+  --bb-sidebar-tone-pending: #a7c080;
 }

@@ -190,34 +190,67 @@ textarea,
   background-color: transparent;
 }
 
-/* Ember: Warm reds and oranges with a glowing ember sidebar. Generated from scripts/themes.mjs. */
+/* Vesper: Minimal near-black with a warm peach accent, by Rauno Freiberg. Generated from scripts/themes.mjs. */
+
 :root,
 .light {
-  --bbb-accent: oklch(0.56 0.18 35);
-  --primary: oklch(0.55 0.2 30);
+  --bbb-accent: #c56f2a;
+  --primary: #c56f2a;
   --primary-foreground: #ffffff;
-  --file-accent: oklch(0.55 0.2 30);
+  --file-accent: #c56f2a;
 }
+
 .dark {
-  --bbb-accent: oklch(0.77 0.14 40);
-  --primary: oklch(0.74 0.15 38);
-  --primary-foreground: #0a0a0a;
-  --file-accent: oklch(0.77 0.14 40);
-}
-html:not(.dark),
-html .light {
-  --bb-sidebar-tone-working: oklch(0.56 0.18 35);
-  --bb-sidebar-tone-pending: oklch(0.56 0.18 35);
-}
-html.dark,
-html .dark {
-  --bb-sidebar-tone-working: oklch(0.77 0.14 40);
-  --bb-sidebar-tone-pending: oklch(0.77 0.14 40);
+  --canvas: #101010;
+  --ink: #eeeeee;
+  --card: color-mix(in srgb, #eeeeee 4%, #101010);
+  --popover: color-mix(in srgb, #eeeeee 5%, #101010);
+  --secondary: color-mix(in srgb, #eeeeee 4%, #101010);
+  --muted: color-mix(in srgb, #eeeeee 4%, #101010);
+  --accent: color-mix(in srgb, #eeeeee 6%, #101010);
+  --border: color-mix(in srgb, #eeeeee 9%, #101010);
+  --border-hairline: color-mix(in srgb, #eeeeee 9%, #101010);
+  --border-seam: color-mix(in srgb, #eeeeee 8%, #101010);
+  --input: color-mix(in srgb, #eeeeee 14%, #101010);
+  --sidebar: #0b0b0b;
+  --sidebar-foreground: #eeeeee;
+  --sidebar-accent: color-mix(in srgb, #eeeeee 6%, #0b0b0b);
+  --sidebar-border: color-mix(in srgb, #eeeeee 8%, #0b0b0b);
+  --surface-selected: color-mix(in srgb, #eeeeee 7%, #0b0b0b);
+  --surface-selected-border: color-mix(in srgb, #eeeeee 12%, #0b0b0b);
+  --muted-foreground: #a0a0a0;
+  --primary: #ffc799;
+  --primary-foreground: #101010;
+  --file-accent: #ffc799;
+  --bbb-accent: #ffc799;
+  --destructive: #ff8080;
+  --destructive-text: #ff8080;
+  --warning: #ffc799;
+  --warning-text: #ffc799;
+  --attention: #ffc799;
+  --success: #99ffe4;
+  --diff-added: #99ffe4;
+  --diff-removed: #ff8080;
 }
 
 .dark [data-sidebar="sidebar"]::before {
   background:
-    radial-gradient(80% 60% at 80% 0%, oklch(0.6 0.2 40 / 45%), transparent 70%),
-    radial-gradient(70% 50% at 10% 75%, oklch(0.5 0.15 10 / 35%), transparent 70%),
-    linear-gradient(to bottom, oklch(0.24 0.09 30), oklch(0.17 0.05 20) 60%, oklch(0.17 0.05 20 / 0%));
+    radial-gradient(80% 60% at 80% 0%, color-mix(in srgb, #ffc799 38%, transparent), transparent 70%),
+    radial-gradient(70% 50% at 10% 75%, color-mix(in srgb, #ffc799 28%, transparent), transparent 70%),
+    linear-gradient(to bottom, color-mix(in srgb, #ffc799 22%, #0b0b0b), #0b0b0b 70%, transparent);
+}
+
+.dark [data-sidebar="sidebar"]::after {
+  display: none;
+}
+
+html:not(.dark),
+html .light {
+  --bb-sidebar-tone-working: #c56f2a;
+  --bb-sidebar-tone-pending: #c56f2a;
+}
+html.dark,
+html .dark {
+  --bb-sidebar-tone-working: #ffc799;
+  --bb-sidebar-tone-pending: #ffc799;
 }

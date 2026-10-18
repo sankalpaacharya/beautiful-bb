@@ -267,13 +267,10 @@
   gap: 0.625rem;
 }
 .bbs-theme {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 0.5rem;
-  row-gap: 0.125rem;
-  align-items: center;
-  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0.5rem 0.75rem;
   border: 1px solid var(--bbs-line);
   border-radius: var(--radius, 0.625rem);
   background: none;
@@ -294,19 +291,33 @@
   outline: 2px solid var(--bbs-accent);
   outline-offset: 2px;
 }
-.bbs-theme-swatch {
-  width: 0.75rem;
-  height: 0.75rem;
+/* A tiny preview in the theme's own background and accents. */
+.bbs-theme-preview {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3125rem;
+  height: 2.75rem;
+  margin-bottom: 0.25rem;
+  padding: 0.5rem;
+  border-radius: calc(var(--radius, 0.625rem) - 0.25rem);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
+}
+.bbs-theme-preview span {
+  width: 0.625rem;
+  height: 0.625rem;
   border-radius: 50%;
-  background: var(--swatch);
-  box-shadow: 0 0 10px -1px var(--swatch);
+}
+.bbs-theme-preview span:first-child {
+  width: 1.75rem;
+  border-radius: 999px;
 }
 .bbs-theme-name {
+  padding: 0 0.25rem;
   font-size: var(--text-sm, 0.8125rem);
   font-weight: 500;
 }
 .bbs-theme-detail {
-  grid-column: 1 / -1;
+  padding: 0 0.25rem;
   font-size: var(--text-xs, 0.75rem);
   line-height: 1.125rem;
   color: var(--muted-foreground);

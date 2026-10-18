@@ -5,9 +5,7 @@
     "editor.background": "#fcfcfc",
     "editor.foreground": "#27272a",
     "editorLineNumber.foreground": "#d4d4d8",
-    "editor.selectionBackground": "#6c4ab340",
-    "diffEditor.insertedTextBackground": "#10b98126",
-    "diffEditor.removedTextBackground": "#ef444426"
+    "editor.selectionBackground": "#6c4ab340"
   },
   "tokenColors": [
     {
@@ -66,8 +64,7 @@
       "scope": [
         "entity.name.type",
         "support.type",
-        "entity.name.class",
-        "entity.other.inherited-class"
+        "entity.name.class"
       ],
       "settings": {
         "foreground": "#007b87"
@@ -93,8 +90,7 @@
     {
       "scope": [
         "variable",
-        "variable.parameter",
-        "meta.definition.variable"
+        "variable.parameter"
       ],
       "settings": {
         "foreground": "#27272a"
@@ -107,15 +103,6 @@
       ],
       "settings": {
         "foreground": "#71717a"
-      }
-    },
-    {
-      "scope": [
-        "markup.heading"
-      ],
-      "settings": {
-        "foreground": "#6c4ab3",
-        "fontStyle": "bold"
       }
     },
     {

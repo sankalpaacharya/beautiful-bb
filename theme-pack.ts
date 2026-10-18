@@ -5,27 +5,90 @@ export const THEME_PACK = [
     "name": "T3 Night",
     "description": "T3 Code's zinc palette with a lavender accent and a starry sidebar",
     "wallpaper": "headphones",
-    "accent": "oklch(0.78 0.11 295)"
+    "accent": "oklch(0.78 0.11 295)",
+    "swatches": [
+      "#0a0a0a",
+      "#b9a5f0",
+      "#7aa2f7",
+      "#34d399"
+    ]
   },
   {
-    "id": "sakura",
-    "name": "Sakura",
-    "description": "Soft pink accents and a blossom-dusk sidebar",
-    "wallpaper": "kitsune",
-    "accent": "oklch(0.8 0.1 355)"
-  },
-  {
-    "id": "terminal",
-    "name": "Terminal",
-    "description": "Phosphor green on black, monospace everywhere",
+    "id": "tokyo-night",
+    "name": "Tokyo Night",
+    "description": "Deep navy with neon blues and purples, by enkia",
     "wallpaper": "coder",
-    "accent": "oklch(0.84 0.17 150)"
+    "accent": "#7aa2f7",
+    "swatches": [
+      "#1a1b26",
+      "#7aa2f7",
+      "#bb9af7",
+      "#9ece6a"
+    ]
   },
   {
-    "id": "ember",
-    "name": "Ember",
-    "description": "Warm reds and oranges with a glowing ember sidebar",
+    "id": "rose-pine",
+    "name": "Rosé Pine",
+    "description": "Soho vibes: muted plum with rose, iris, and gold",
+    "wallpaper": "kitsune",
+    "accent": "#c4a7e7",
+    "swatches": [
+      "#191724",
+      "#c4a7e7",
+      "#ebbcba",
+      "#f6c177"
+    ]
+  },
+  {
+    "id": "kanagawa",
+    "name": "Kanagawa",
+    "description": "Inspired by Hokusai's Great Wave: ink, wave blue, and old paper",
     "wallpaper": "samurai",
-    "accent": "oklch(0.77 0.14 40)"
+    "accent": "#7e9cd8",
+    "swatches": [
+      "#1f1f28",
+      "#7e9cd8",
+      "#957fb8",
+      "#e6c384"
+    ]
+  },
+  {
+    "id": "everforest",
+    "name": "Everforest",
+    "description": "Soft forest greens that are easy on the eyes",
+    "wallpaper": "capybara",
+    "accent": "#a7c080",
+    "swatches": [
+      "#2d353b",
+      "#a7c080",
+      "#83c092",
+      "#dbbc7f"
+    ]
+  },
+  {
+    "id": "vesper",
+    "name": "Vesper",
+    "description": "Minimal near-black with a warm peach accent, by Rauno Freiberg",
+    "wallpaper": "headphones",
+    "accent": "#ffc799",
+    "swatches": [
+      "#101010",
+      "#ffc799",
+      "#99ffe4",
+      "#a0a0a0"
+    ]
+  },
+  {
+    "id": "poimandres",
+    "name": "Poimandres",
+    "description": "Cool blue-gray with mint and sky highlights",
+    "wallpaper": "robot",
+    "accent": "#5de4c7",
+    "swatches": [
+      "#1b1e28",
+      "#5de4c7",
+      "#89ddff",
+      "#fcc5e9"
+    ]
   }
 ] as const;

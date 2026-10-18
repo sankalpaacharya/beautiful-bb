@@ -143,7 +143,16 @@ export function SettingsPage() {
       <section className="bbs-section" aria-labelledby="bbs-look">
         <h2 id="bbs-look">Theme</h2>
         <div className="bbs-themes" role="radiogroup" aria-label="Theme">
-          {[...THEME_PACK, { id: "default", name: "bb default", description: "bb's own palette, no plugin theme", accent: "var(--muted-foreground)" }].map((t) => (
+          {[
+            ...THEME_PACK,
+            {
+              id: "default",
+              name: "bb default",
+              description: "bb's own palette, no plugin theme",
+              accent: "#a1a1aa",
+              swatches: ["#0f0f10", "#e4e4e7", "#a1a1aa", "#52525b"],
+            },
+          ].map((t) => (
             <button
               key={t.id}
               type="button"
@@ -153,13 +162,17 @@ export function SettingsPage() {
               style={{ ["--swatch" as string]: t.accent }}
               onClick={() => chooseTheme(t.id)}
             >
-              <span className="bbs-theme-swatch" aria-hidden="true" />
+              <span className="bbs-theme-preview" style={{ background: t.swatches[0] }} aria-hidden="true">
+                {t.swatches.slice(1).map((color) => (
+                  <span key={color} style={{ background: color }} />
+                ))}
+              </span>
               <span className="bbs-theme-name">{t.name}</span>
               <span className="bbs-theme-detail">{t.description}</span>
             </button>
           ))}
         </div>
-        <p className="bbs-section-detail">Pack themes also switch the home wallpaper to the one they pair with, when a built-in wallpaper is on.</p>
+        <p className="bbs-section-detail">Popular editor themes in their official colors, with matching code colors. Each also switches the home wallpaper to the one it pairs with, when a built-in wallpaper is on.</p>
       </section>
 
       <section className="bbs-section" aria-labelledby="bbs-sidebar">

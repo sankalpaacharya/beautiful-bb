@@ -190,35 +190,67 @@ textarea,
   background-color: transparent;
 }
 
-/* Terminal: Phosphor green on black, monospace everywhere. Generated from scripts/themes.mjs. */
+/* Poimandres: Cool blue-gray with mint and sky highlights. Generated from scripts/themes.mjs. */
+
 :root,
 .light {
-  --bbb-accent: oklch(0.5 0.14 150);
-  --primary: oklch(0.5 0.15 150);
+  --bbb-accent: #1f9e85;
+  --primary: #1f9e85;
   --primary-foreground: #ffffff;
-  --file-accent: oklch(0.5 0.15 150);
-  --font-sans: var(--font-mono);
+  --file-accent: #1f9e85;
 }
+
 .dark {
-  --bbb-accent: oklch(0.84 0.17 150);
-  --primary: oklch(0.8 0.17 150);
-  --primary-foreground: #0a0a0a;
-  --file-accent: oklch(0.84 0.17 150);
-}
-html:not(.dark),
-html .light {
-  --bb-sidebar-tone-working: oklch(0.5 0.14 150);
-  --bb-sidebar-tone-pending: oklch(0.5 0.14 150);
-}
-html.dark,
-html .dark {
-  --bb-sidebar-tone-working: oklch(0.84 0.17 150);
-  --bb-sidebar-tone-pending: oklch(0.84 0.17 150);
+  --canvas: #1b1e28;
+  --ink: #e4f0fb;
+  --card: color-mix(in srgb, #e4f0fb 4%, #1b1e28);
+  --popover: color-mix(in srgb, #e4f0fb 5%, #1b1e28);
+  --secondary: color-mix(in srgb, #e4f0fb 4%, #1b1e28);
+  --muted: color-mix(in srgb, #e4f0fb 4%, #1b1e28);
+  --accent: color-mix(in srgb, #e4f0fb 6%, #1b1e28);
+  --border: color-mix(in srgb, #e4f0fb 9%, #1b1e28);
+  --border-hairline: color-mix(in srgb, #e4f0fb 9%, #1b1e28);
+  --border-seam: color-mix(in srgb, #e4f0fb 8%, #1b1e28);
+  --input: color-mix(in srgb, #e4f0fb 14%, #1b1e28);
+  --sidebar: #171922;
+  --sidebar-foreground: #e4f0fb;
+  --sidebar-accent: color-mix(in srgb, #e4f0fb 6%, #171922);
+  --sidebar-border: color-mix(in srgb, #e4f0fb 8%, #171922);
+  --surface-selected: color-mix(in srgb, #e4f0fb 7%, #171922);
+  --surface-selected-border: color-mix(in srgb, #e4f0fb 12%, #171922);
+  --muted-foreground: #a6accd;
+  --primary: #5de4c7;
+  --primary-foreground: #1b1e28;
+  --file-accent: #5de4c7;
+  --bbb-accent: #5de4c7;
+  --destructive: #d0679d;
+  --destructive-text: #d0679d;
+  --warning: #fffac2;
+  --warning-text: #fffac2;
+  --attention: #fffac2;
+  --success: #5de4c7;
+  --diff-added: #5de4c7;
+  --diff-removed: #d0679d;
 }
 
 .dark [data-sidebar="sidebar"]::before {
   background:
-    radial-gradient(80% 60% at 80% 0%, oklch(0.55 0.16 145 / 45%), transparent 70%),
-    radial-gradient(70% 50% at 10% 75%, oklch(0.45 0.1 180 / 35%), transparent 70%),
-    linear-gradient(to bottom, oklch(0.2 0.07 150), oklch(0.15 0.04 160) 60%, oklch(0.15 0.04 160 / 0%));
+    radial-gradient(80% 60% at 80% 0%, color-mix(in srgb, #89ddff 38%, transparent), transparent 70%),
+    radial-gradient(70% 50% at 10% 75%, color-mix(in srgb, #5de4c7 28%, transparent), transparent 70%),
+    linear-gradient(to bottom, color-mix(in srgb, #5de4c7 22%, #171922), #171922 70%, transparent);
+}
+
+.dark [data-sidebar="sidebar"]::after {
+  display: none;
+}
+
+html:not(.dark),
+html .light {
+  --bb-sidebar-tone-working: #1f9e85;
+  --bb-sidebar-tone-pending: #1f9e85;
+}
+html.dark,
+html .dark {
+  --bb-sidebar-tone-working: #5de4c7;
+  --bb-sidebar-tone-pending: #5de4c7;
 }

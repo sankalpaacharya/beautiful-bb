@@ -7,7 +7,7 @@ rail. Changes apply right away. The same settings are also available with
 
 | Setting | What it does | Default |
 | --- | --- | --- |
-| Theme | T3 Night, Sakura, Terminal, Ember, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
+| Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
 | Agent activity | A wave on working threads in the sidebar, sparkles when one finishes | On |
 | Wave spinner | Wave spinner instead of the "Working..." shimmer | On |
@@ -25,11 +25,21 @@ Themes can also be picked in Settings → Appearance. Each comes with matching c
 
 ## Themes
 
-Four themes, built from `scripts/themes.mjs` by `node scripts/build-themes.mjs`
-(theme CSS, code themes, and the manifest's theme list): **T3 Night**
-(lavender), **Sakura** (pink, pairs with the kitsune), **Terminal** (phosphor
-green, monospace everywhere, pairs with the coder), and **Ember** (red-orange,
-pairs with the samurai).
+Seven themes, built from `scripts/themes.mjs` by `node scripts/build-themes.mjs`:
+
+| Theme | Dark | Light | Code colors |
+| --- | --- | --- | --- |
+| **T3 Night** | T3 Code zinc with lavender | T3 Code zinc | generated |
+| **Tokyo Night** | Night | Day | official `tokyo-night` |
+| **Rosé Pine** | Main | Dawn | official `rose-pine` / `rose-pine-dawn` |
+| **Kanagawa** | Wave | Lotus | official `kanagawa-wave` / `kanagawa-lotus` |
+| **Everforest** | Dark | Light | official `everforest-dark` / `everforest-light` |
+| **Vesper** | Peach on near-black | zinc with a peach accent | official `vesper` |
+| **Poimandres** | Mint on blue-gray | zinc with a mint accent | official `poimandres` |
+
+Palettes come from each theme's own VS Code theme file. One accent per theme
+colors bb's buttons, links, focus rings, selection, sidebar status, and the
+plugin's own pieces; red, green, and yellow keep their meaning.
 
 ### T3 Night
 

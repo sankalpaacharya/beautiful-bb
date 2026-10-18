@@ -35,33 +35,63 @@
         }
       },
       {
-        "id": "sakura",
-        "name": "Sakura",
-        "description": "Soft pink accents and a blossom-dusk sidebar",
-        "css": "./themes/sakura.css",
+        "id": "tokyo-night",
+        "name": "Tokyo Night",
+        "description": "Deep navy with neon blues and purples, by enkia",
+        "css": "./themes/tokyo-night.css",
         "codeTheme": {
-          "dark": "./themes/sakura-code-dark.json",
-          "light": "./themes/sakura-code-light.json"
+          "dark": "tokyo-night",
+          "light": "github-light-default"
         }
       },
       {
-        "id": "terminal",
-        "name": "Terminal",
-        "description": "Phosphor green on black, monospace everywhere",
-        "css": "./themes/terminal.css",
+        "id": "rose-pine",
+        "name": "Rosé Pine",
+        "description": "Soho vibes: muted plum with rose, iris, and gold",
+        "css": "./themes/rose-pine.css",
         "codeTheme": {
-          "dark": "./themes/terminal-code-dark.json",
-          "light": "./themes/terminal-code-light.json"
+          "dark": "rose-pine",
+          "light": "rose-pine-dawn"
         }
       },
       {
-        "id": "ember",
-        "name": "Ember",
-        "description": "Warm reds and oranges with a glowing ember sidebar",
-        "css": "./themes/ember.css",
+        "id": "kanagawa",
+        "name": "Kanagawa",
+        "description": "Inspired by Hokusai's Great Wave: ink, wave blue, and old paper",
+        "css": "./themes/kanagawa.css",
         "codeTheme": {
-          "dark": "./themes/ember-code-dark.json",
-          "light": "./themes/ember-code-light.json"
+          "dark": "kanagawa-wave",
+          "light": "kanagawa-lotus"
+        }
+      },
+      {
+        "id": "everforest",
+        "name": "Everforest",
+        "description": "Soft forest greens that are easy on the eyes",
+        "css": "./themes/everforest.css",
+        "codeTheme": {
+          "dark": "everforest-dark",
+          "light": "everforest-light"
+        }
+      },
+      {
+        "id": "vesper",
+        "name": "Vesper",
+        "description": "Minimal near-black with a warm peach accent, by Rauno Freiberg",
+        "css": "./themes/vesper.css",
+        "codeTheme": {
+          "dark": "vesper",
+          "light": "github-light-default"
+        }
+      },
+      {
+        "id": "poimandres",
+        "name": "Poimandres",
+        "description": "Cool blue-gray with mint and sky highlights",
+        "css": "./themes/poimandres.css",
+        "codeTheme": {
+          "dark": "poimandres",
+          "light": "github-light-default"
         }
       }
     ],
