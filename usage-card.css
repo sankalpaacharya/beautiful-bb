@@ -1,14 +1,18 @@
 /* Weekly usage card. Two fixed lines per harness; hover or keyboard focus only
-   lifts the opacity, nothing resizes. One accent from the active theme colors
-   every bar so the rows read as a set. */
+   lifts the opacity, nothing resizes. One lavender accent, matched to the T3
+   Night sidebar banner, colors every bar so the rows read as a set. */
 
 .bbb-card {
-  --bbb-accent: var(--primary);
+  --bbb-accent: oklch(0.55 0.17 295);
   --bbb-track: color-mix(in oklch, var(--ink, currentColor) 10%, transparent);
   padding: 0.5rem 0.625rem;
   color: var(--sidebar-foreground, var(--foreground));
   opacity: 0.55;
   transition: opacity 200ms ease;
+}
+
+.dark .bbb-card {
+  --bbb-accent: oklch(0.78 0.11 295);
 }
 
 .bbb-card:hover,
