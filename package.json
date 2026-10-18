@@ -1,0 +1,37 @@
+{
+  "name": "bb-plugin-beautiful-bb",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Make bb beautiful: themes and UI polish.",
+  "repository": "https://github.com/sankalpaacharya/beautiful-bb",
+  "license": "MIT",
+  "engines": {
+    "bb": ">=0.46",
+    "bbPluginSdk": ">=0.6.49"
+  },
+  "scripts": {
+    "build:themes": "node scripts/build-themes.mjs",
+    "build": "node scripts/build-themes.mjs && bb plugin build ."
+  },
+  "bb": {
+    "name": "Beautiful bb",
+    "description": "Themes and UI polish for bb, starting with T3 Night: the T3 Code palette, system fonts, larger text, and a starry sidebar banner.",
+    "branding": {
+      "icon": "Zap"
+    },
+    "server": "./server.ts",
+    "themes": [
+      {
+        "id": "t3-night",
+        "name": "T3 Night",
+        "description": "T3 Code's zinc and indigo palette with a starry sidebar banner",
+        "css": "./themes/t3-night.css"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@get-bb/plugin-sdk": "0.6.49",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
