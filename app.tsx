@@ -1,6 +1,6 @@
 // Beautiful bb frontend: the weekly usage card pinned above the sidebar footer.
-// Each harness gets two fixed lines: name, 7-day token bars, and weekly percent;
-// then a progress bar with the time until the limit resets.
+// Each harness is one line: logo, weekly limit progress bar, 7-day token bars,
+// percent used, and time until the limit resets.
 import { useCallback, useEffect, useState } from "react";
 import {
   definePluginApp,
@@ -60,22 +60,17 @@ function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
       className="bbb-row"
       aria-label={`${h.name}: ${h.usedPercent}% of weekly limit used, resets ${dayTime.format(resetsAt)}.`}
     >
-      <div className="bbb-head">
-        <span className="bbb-icon" aria-hidden="true">
-          <ProviderIcon providerKind="agent" provider={provider} />
-        </span>
-        <span className="bbb-name">{h.name}</span>
-        {h.daily.length > 0 && <TokenBars daily={h.daily} now={now} />}
-        <span className="bbb-pct">{h.usedPercent}%</span>
-      </div>
-      <div className="bbb-foot">
-        <span className="bbb-bar" aria-hidden="true">
-          <span style={{ width: `${used}%` }} />
-        </span>
-        <span className="bbb-in" title={`Resets ${dayTime.format(resetsAt)}`}>
-          {until(resetsAt - now)}
-        </span>
-      </div>
+      <span className="bbb-icon" title={h.name} aria-hidden="true">
+        <ProviderIcon providerKind="agent" provider={provider} />
+      </span>
+      <span className="bbb-bar" aria-hidden="true">
+        <span style={{ width: `${used}%` }} />
+      </span>
+      {h.daily.length > 0 && <TokenBars daily={h.daily} now={now} />}
+      <span className="bbb-pct">{h.usedPercent}%</span>
+      <span className="bbb-in" title={`Resets ${dayTime.format(resetsAt)}`}>
+        {until(resetsAt - now)}
+      </span>
     </li>
   );
 }
