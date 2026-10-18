@@ -17,12 +17,14 @@ The look of [T3 Code](https://github.com/pingdotgg/t3code) in bb:
 
 ## Weekly usage card
 
-A card above the sidebar footer shows each signed-in agent harness (Claude,
-Codex) with its weekly limit as a burn-up chart: the week's measured usage,
-a dashed even-pace line, and a dotted projection to the reset. It stays dim
-until you hover or focus it, then shows the reset time and whether you are
-on pace or projected to run out. Toggle it with the chart button in the
-sidebar footer. The plugin samples usage every 10 minutes to draw the curve.
+A compact card above the sidebar footer shows each signed-in agent harness
+(Claude, Codex): its weekly limit as a progress bar with the time until reset,
+and a 7-day bar graph of tokens used per day. It stays dim until you hover or
+focus it. Toggle it with the chart button in the sidebar footer.
+
+Token counts come from the harnesses' local session logs (`~/.claude/projects`
+and `~/.codex/sessions`), so work outside bb counts too. They include input,
+output, and cache writes, not cache reads.
 
 ## Install
 

@@ -17,6 +17,7 @@
   },
   "include": [
     "server.ts",
+    "tokens.ts",
     "app.tsx",
     "css.d.ts"
   ]

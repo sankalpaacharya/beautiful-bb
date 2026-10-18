@@ -1,45 +1,19 @@
 // Beautiful bb frontend: the weekly usage card pinned above the sidebar footer.
-// Each harness gets a burn-up chart of its current week: the measured usage
-// curve, a dashed even-pace diagonal, and a dotted projection to the reset.
-import { useCallback, useEffect, useId, useState } from "react";
+// Each harness gets two fixed lines: name, 7-day token bars, and weekly percent;
+// then a progress bar with the time until the limit resets.
+import { useCallback, useEffect, useState } from "react";
 import {
   definePluginApp,
   experimental_ProviderIcon as ProviderIcon,
   experimental_useProviders as useProviders,
-  useRealtime,
   useRpc,
 } from "@get-bb/plugin-sdk/app";
 import type { HarnessUsage, rpcContract } from "./server";
 import "./usage-card.css";
 
-const USAGE_CHANGED = "usage-changed";
 const REFRESH_MS = 2 * 60 * 1000;
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
-
-type Tone = "calm" | "hot" | "critical";
-
-type Burn = {
-  /** Fraction of the week elapsed, 0–1. */
-  elapsed: number;
-  /** Projected percent at reset if the week's average rate holds. */
-  projected: number;
-  /** When usage would hit 100% at that rate, if before the reset. */
-  runsOutAt: number | null;
-  tone: Tone;
-};
-
-function burnOf(h: HarnessUsage, now: number): Burn {
-  const end = Date.parse(h.resetsAt);
-  const span = end - h.windowStart;
-  const elapsedMs = Math.min(Math.max(now - h.windowStart, 0), span);
-  const elapsed = span > 0 ? elapsedMs / span : 0;
-  const rate = elapsedMs > HOUR_MS ? h.usedPercent / elapsedMs : 0;
-  const projected = h.usedPercent + rate * (end - now);
-  const runsOutAt = rate > 0 && projected > 100 ? now + (100 - h.usedPercent) / rate : null;
-  const tone: Tone = h.usedPercent >= 90 ? "critical" : runsOutAt !== null ? "hot" : "calm";
-  return { elapsed, projected, runsOutAt, tone };
-}
 
 const dayTime = new Intl.DateTimeFormat(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
 
@@ -51,93 +25,56 @@ function until(ms: number): string {
   return hours ? `${days}d ${hours}h` : `${days}d`;
 }
 
-/** Chart coordinates: x is the week 0–100, y is percent used, flipped for SVG. */
-function curvePoints(h: HarnessUsage, now: number) {
-  const span = Date.parse(h.resetsAt) - h.windowStart;
-  const x = (t: number) => Math.min(Math.max(((t - h.windowStart) / span) * 100, 0), 100);
-  const y = (pct: number) => 100 - Math.min(Math.max(pct, 0), 100);
-  const measured = h.samples.map((s) => [x(s.t), y(s.pct)] as const);
-  const nowPoint = [x(now), y(h.usedPercent)] as const;
-  if (!measured.length || measured.at(-1)![0] < nowPoint[0]) measured.push(nowPoint);
-  return { measured, start: [0, 100] as const, x, y };
-}
+const tokenCount = new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 });
+const weekday = new Intl.DateTimeFormat(undefined, { weekday: "short" });
 
-function BurnChart({ h, burn, now }: { h: HarnessUsage; burn: Burn; now: number }) {
-  const gradientId = useId();
-  const { measured, start, y } = curvePoints(h, now);
-  const first = measured[0]!;
-  const last = measured.at(-1)!;
-  const line = measured.map(([px, py]) => `${px},${py}`).join(" ");
-  // Before the first sample the curve is unknown: bridge it from the week's
-  // zero start with a dashed segment instead of inventing data.
-  const gap = first[0] > 0.5 ? `${start[0]},${start[1]} ${first[0]},${first[1]}` : null;
-  const area = `${start[0]},100 ${start[0]},${start[1]} ${line} ${last[0]},100`;
-  const projectionEnd: readonly [number, number] =
-    burn.runsOutAt !== null
-      ? [Math.min(((burn.runsOutAt - h.windowStart) / (Date.parse(h.resetsAt) - h.windowStart)) * 100, 100), 0]
-      : [100, y(burn.projected)];
-
+/** Seven bars of fresh tokens per day, today on the right. */
+function TokenBars({ daily, now }: { daily: number[]; now: number }) {
+  const peak = Math.max(...daily, 1);
+  const total = daily.reduce((sum, n) => sum + n, 0);
   return (
-    <div className="bbb-chart" data-tone={burn.tone} aria-hidden="true">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--bbb-tone)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="var(--bbb-tone)" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <line className="bbb-pace" x1="0" y1="100" x2="100" y2="0" />
-        <polygon className="bbb-area" points={area} fill={`url(#${gradientId})`} />
-        {gap && <polyline className="bbb-gap" points={gap} />}
-        <polyline className="bbb-line" points={line} />
-        <line
-          className="bbb-projection"
-          x1={last[0]}
-          y1={last[1]}
-          x2={projectionEnd[0]}
-          y2={projectionEnd[1]}
-        />
-      </svg>
-      <span className="bbb-now" style={{ left: `${last[0]}%`, top: `${last[1]}%` }} />
-    </div>
+    <span className="bbb-bars" title={`${tokenCount.format(total)} tokens in the last 7 days`}>
+      {daily.map((n, i) => {
+        const day = weekday.format(now - (daily.length - 1 - i) * DAY_MS);
+        return (
+          <span
+            key={i}
+            className="bbb-day"
+            data-empty={n === 0 || undefined}
+            style={{ height: `${Math.max((n / peak) * 100, 12)}%` }}
+            title={`${day}: ${tokenCount.format(n)} tokens`}
+          />
+        );
+      })}
+    </span>
   );
 }
 
 function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
   const { providers } = useProviders();
   const provider = providers.find((p) => p.id === h.id) ?? { id: h.id };
-  const burn = burnOf(h, now);
   const resetsAt = Date.parse(h.resetsAt);
-  const outlook =
-    burn.runsOutAt !== null
-      ? `Runs out around ${dayTime.format(burn.runsOutAt)}`
-      : `On pace for ${Math.round(burn.projected)}% by reset`;
+  const used = Math.min(Math.max(h.usedPercent, 0), 100);
   return (
     <li
       className="bbb-row"
-      data-tone={burn.tone}
-      aria-label={`${h.name}: ${h.usedPercent}% of weekly limit used. Resets ${dayTime.format(resetsAt)}. ${outlook}.`}
+      aria-label={`${h.name}: ${h.usedPercent}% of weekly limit used, resets ${dayTime.format(resetsAt)}.`}
     >
       <div className="bbb-head">
         <span className="bbb-icon" aria-hidden="true">
           <ProviderIcon providerKind="agent" provider={provider} />
         </span>
         <span className="bbb-name">{h.name}</span>
-        {h.planLabel && <span className="bbb-plan">{h.planLabel}</span>}
-        <span className="bbb-pct">
-          {h.usedPercent}
-          <small>%</small>
-        </span>
+        {h.daily.length > 0 && <TokenBars daily={h.daily} now={now} />}
+        <span className="bbb-pct">{h.usedPercent}%</span>
       </div>
-      <BurnChart h={h} burn={burn} now={now} />
-      <div className="bbb-detail">
-        <div>
-          <p>
-            Resets {dayTime.format(resetsAt)}
-            <span className="bbb-in">in {until(resetsAt - now)}</span>
-          </p>
-          <p className="bbb-outlook">{outlook}</p>
-        </div>
+      <div className="bbb-foot">
+        <span className="bbb-bar" aria-hidden="true">
+          <span style={{ width: `${used}%` }} />
+        </span>
+        <span className="bbb-in" title={`Resets ${dayTime.format(resetsAt)}`}>
+          {until(resetsAt - now)}
+        </span>
       </div>
     </li>
   );
@@ -165,7 +102,6 @@ function useWeeklyUsage() {
       window.removeEventListener("focus", refetch);
     };
   }, [refetch]);
-  useRealtime(USAGE_CHANGED, refetch);
   return { harnesses, now };
 }
 
