@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { experimental_usePluginId as usePluginId, useRpc, useSdk } from "@get-bb/plugin-sdk/app";
 import type { Preferences, rpcContract } from "./server";
 import { applyFeatures } from "./features";
+import { AsciiArt } from "./wallpaper";
 import "./settings-page.css";
 
 const THEME_ID = "plugin:beautiful-bb:t3-night";
@@ -19,6 +20,15 @@ const WALLPAPERS: { id: Preferences["wallpaper"]; label: string }[] = [
   { id: "robot", label: "Robot buddy" },
   { id: "custom", label: "Your image" },
 ];
+
+/** Tiles are about a sixth of the home pane's width, so glyphs shrink to match. */
+const TILE_CELL = { w: 2, h: 3.6 };
+
+/** A tile drawn the way the home screen would draw this wallpaper. */
+function Preview({ src, style }: { src: string; style: Preferences["wallpaperStyle"] }) {
+  if (style === "photo") return <img className="bbs-preview-photo" src={src} alt="" loading="lazy" />;
+  return <AsciiArt key={`${src}:${style}`} src={src} colorful={style === "ascii-color"} cell={TILE_CELL} className="bbs-preview-ascii" />;
+}
 
 const STYLES: { id: Preferences["wallpaperStyle"]; label: string }[] = [
   { id: "ascii-color", label: "Colorful ASCII" },
@@ -184,7 +194,7 @@ export function SettingsPage() {
               onClick={() => update({ wallpaper: w.id })}
             >
               <span className="bbs-tile-art" data-kind={w.id === "none" || w.id === "custom" ? w.id : undefined}>
-                {w.id !== "none" && w.id !== "custom" && <img src={thumb(w.id)} alt="" loading="lazy" />}
+                {w.id !== "none" && w.id !== "custom" && <Preview src={thumb(w.id)} style={prefs.wallpaperStyle} />}
                 {w.id === "custom" && <span>Image URL or file</span>}
               </span>
               <span className="bbs-tile-label">{w.label}</span>

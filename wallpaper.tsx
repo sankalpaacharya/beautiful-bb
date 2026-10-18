@@ -7,8 +7,8 @@ import "./wallpaper.css";
 
 /** Glyphs from empty to dense; a cell's darkness picks one. */
 const RAMP = " .:-=+*#%@";
-const CELL_W = 5;
-const CELL_H = 9;
+/** Glyph cell size in CSS pixels on the home screen. */
+const HOME_CELL = { w: 5, h: 9 };
 /** Source pixels lighter than this are background and stay blank. */
 const BACKGROUND_LUMA = 0.94;
 
@@ -56,7 +56,11 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 /** Draws `img` into `canvas` as glyphs, fit to the canvas width and anchored to its bottom. */
-function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string, colorful: boolean) {
+type Cell = { w: number; h: number };
+
+function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string, colorful: boolean, cell: Cell) {
+  const CELL_W = cell.w;
+  const CELL_H = cell.h;
   const { width, height } = canvas.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
   canvas.width = Math.round(width * dpr);
@@ -99,7 +103,18 @@ function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string
   }
 }
 
-function AsciiWallpaper({ src, colorful }: { src: string; colorful: boolean }) {
+/** Canvas that draws `src` as ASCII art; falls back to the photo if pixels can't be read. */
+export function AsciiArt({
+  src,
+  colorful,
+  cell = HOME_CELL,
+  className = "bbb-wallpaper-ascii",
+}: {
+  src: string;
+  colorful: boolean;
+  cell?: Cell;
+  className?: string;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -108,7 +123,7 @@ function AsciiWallpaper({ src, colorful }: { src: string; colorful: boolean }) {
     let image: HTMLImageElement | null = null;
     let cancelled = false;
     const redraw = () => {
-      if (image) drawAscii(canvas, image, getComputedStyle(canvas).color, colorful);
+      if (image) drawAscii(canvas, image, getComputedStyle(canvas).color, colorful, cell);
     };
     loadImage(src).then(
       (img) => {
@@ -129,9 +144,9 @@ function AsciiWallpaper({ src, colorful }: { src: string; colorful: boolean }) {
       cancelled = true;
       observer.disconnect();
     };
-  }, [src, colorful]);
+  }, [src, colorful, cell]);
   if (failed) return <img className="bbb-wallpaper-photo" src={src} alt="" />;
-  return <canvas ref={canvasRef} className="bbb-wallpaper-ascii" />;
+  return <canvas ref={canvasRef} className={className} />;
 }
 
 export function HomeWallpaper() {
@@ -147,7 +162,7 @@ export function HomeWallpaper() {
       {style === "photo" ? (
         <img className="bbb-wallpaper-photo" src={src} alt="" decoding="async" />
       ) : (
-        <AsciiWallpaper key={src} src={src} colorful={style !== "ascii"} />
+        <AsciiArt key={src} src={src} colorful={style !== "ascii"} />
       )}
     </div>
   );
