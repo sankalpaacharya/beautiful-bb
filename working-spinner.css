@@ -3,7 +3,7 @@
    active while the Wave spinner setting sets <html data-bbb-wave>. */
 
 html[data-bbb-wave] .min-h-7.mt-4 > .animate-shine {
-  --bbb-wave: oklch(0.55 0.17 295);
+  --bbb-wave: var(--bbb-accent, oklch(0.55 0.17 295));
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -12,7 +12,7 @@ html[data-bbb-wave] .min-h-7.mt-4 > .animate-shine {
   mask-image: none;
 }
 html[data-bbb-wave].dark .min-h-7.mt-4 > .animate-shine {
-  --bbb-wave: oklch(0.78 0.11 295);
+  --bbb-wave: var(--bbb-accent, oklch(0.78 0.11 295));
 }
 
 html[data-bbb-wave] .min-h-7.mt-4 > .animate-shine::before {

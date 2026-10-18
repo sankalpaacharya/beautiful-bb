@@ -58,7 +58,10 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 /** Draws `img` into `canvas` as glyphs, fit to the canvas width and anchored to its bottom. */
 type Cell = { w: number; h: number };
 
-function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string, colorful: boolean, cell: Cell) {
+/** One drawn glyph, kept so the living wallpaper can redraw it. */
+type Glyph = { x: number; y: number; level: number; color: string };
+
+function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string, colorful: boolean, cell: Cell): Glyph[] {
   const CELL_W = cell.w;
   const CELL_H = cell.h;
   const { width, height } = canvas.getBoundingClientRect();
@@ -67,7 +70,7 @@ function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string
   canvas.height = Math.round(height * dpr);
   const cols = Math.floor(width / CELL_W);
   const rows = Math.floor(height / CELL_H);
-  if (cols < 1 || rows < 1) return;
+  if (cols < 1 || rows < 1) return [];
 
   // Sample one pixel per cell: the image spans the full width, sits on the
   // bottom edge, and is cropped at the top only when it is taller than the pane.
@@ -87,6 +90,7 @@ function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string
   ctx.font = `${CELL_H}px ui-monospace, "SF Mono", Menlo, monospace`;
   ctx.textBaseline = "top";
   const darkCanvas = document.documentElement.classList.contains("dark");
+  const glyphs: Glyph[] = [];
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       const i = (y * cols + x) * 4;
@@ -96,11 +100,40 @@ function drawAscii(canvas: HTMLCanvasElement, img: HTMLImageElement, ink: string
       if (light >= BACKGROUND_LUMA) continue;
       // A square-root curve lifts light subject areas (skin, cloth) off the blank background.
       const darkness = Math.sqrt((BACKGROUND_LUMA - light) / BACKGROUND_LUMA);
-      const glyph = RAMP[Math.min(RAMP.length - 1, Math.max(1, Math.round(darkness * (RAMP.length - 1))))]!;
-      if (colorful) ctx.fillStyle = tint(pixels[i]!, pixels[i + 1]!, pixels[i + 2]!, darkCanvas);
-      ctx.fillText(glyph, x * CELL_W, y * CELL_H);
+      const level = Math.min(RAMP.length - 1, Math.max(1, Math.round(darkness * (RAMP.length - 1))));
+      const color = colorful ? tint(pixels[i]!, pixels[i + 1]!, pixels[i + 2]!, darkCanvas) : ink;
+      ctx.fillStyle = color;
+      ctx.fillText(RAMP[level]!, x * CELL_W, y * CELL_H);
+      glyphs.push({ x: x * CELL_W, y: y * CELL_H, level, color });
     }
   }
+  return glyphs;
+}
+
+const FLICKER_MS = 120;
+const FLICKER_SHARE = 0.025;
+
+/**
+ * Living wallpaper: every tick, a small share of glyphs re-roll one step
+ * denser or lighter than their drawn level, like a terminal printout
+ * breathing. Returns a stop function.
+ */
+function flicker(canvas: HTMLCanvasElement, glyphs: Glyph[], cell: Cell): () => void {
+  if (!glyphs.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return () => {};
+  const ctx = canvas.getContext("2d")!;
+  const timer = window.setInterval(() => {
+    if (document.hidden) return;
+    const count = Math.ceil(glyphs.length * FLICKER_SHARE);
+    for (let n = 0; n < count; n++) {
+      const g = glyphs[Math.floor(Math.random() * glyphs.length)]!;
+      const shift = Math.floor(Math.random() * 3) - 1;
+      const level = Math.min(RAMP.length - 1, Math.max(1, g.level + shift));
+      ctx.clearRect(g.x, g.y, cell.w, cell.h);
+      ctx.fillStyle = g.color;
+      ctx.fillText(RAMP[level]!, g.x, g.y);
+    }
+  }, FLICKER_MS);
+  return () => window.clearInterval(timer);
 }
 
 /** Canvas that draws `src` as ASCII art; falls back to the photo if pixels can't be read. */
@@ -109,11 +142,13 @@ export function AsciiArt({
   colorful,
   cell = HOME_CELL,
   className = "bbb-wallpaper-ascii",
+  living = false,
 }: {
   src: string;
   colorful: boolean;
   cell?: Cell;
   className?: string;
+  living?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [failed, setFailed] = useState(false);
@@ -122,8 +157,12 @@ export function AsciiArt({
     if (!canvas) return;
     let image: HTMLImageElement | null = null;
     let cancelled = false;
+    let stopFlicker = () => {};
     const redraw = () => {
-      if (image) drawAscii(canvas, image, getComputedStyle(canvas).color, colorful, cell);
+      if (!image) return;
+      stopFlicker();
+      const glyphs = drawAscii(canvas, image, getComputedStyle(canvas).color, colorful, cell);
+      if (living) stopFlicker = flicker(canvas, glyphs, cell);
     };
     loadImage(src).then(
       (img) => {
@@ -142,9 +181,10 @@ export function AsciiArt({
     observer.observe(canvas);
     return () => {
       cancelled = true;
+      stopFlicker();
       observer.disconnect();
     };
-  }, [src, colorful, cell]);
+  }, [src, colorful, cell, living]);
   if (failed) return <img className="bbb-wallpaper-photo" src={src} alt="" />;
   return <canvas ref={canvasRef} className={className} />;
 }
@@ -157,12 +197,13 @@ export function HomeWallpaper() {
   const src = wallpaperSrc(pluginId, wallpaper, custom);
   if (!src) return null;
   const style = values?.wallpaperStyle;
+  const living = values?.livingWallpaper !== false && style !== "photo";
   return (
-    <div className="bbb-wallpaper" data-style={style} aria-hidden="true">
+    <div className="bbb-wallpaper" data-style={style} data-living={living || undefined} aria-hidden="true">
       {style === "photo" ? (
         <img className="bbb-wallpaper-photo" src={src} alt="" decoding="async" />
       ) : (
-        <AsciiArt key={src} src={src} colorful={style !== "ascii"} />
+        <AsciiArt key={src} src={src} colorful={style !== "ascii"} living={living} />
       )}
     </div>
   );

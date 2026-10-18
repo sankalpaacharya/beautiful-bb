@@ -2,7 +2,7 @@
    lavender accent for switches and the selected wallpaper. */
 
 .bbs-page {
-  --bbs-accent: oklch(0.55 0.17 295);
+  --bbs-accent: var(--bbb-accent, oklch(0.55 0.17 295));
   --bbs-line: color-mix(in oklch, var(--ink, currentColor) 10%, transparent);
   max-width: 44rem;
   margin: 0 auto;
@@ -10,7 +10,7 @@
   color: var(--foreground);
 }
 .dark .bbs-page {
-  --bbs-accent: oklch(0.72 0.13 295);
+  --bbs-accent: var(--bbb-accent, oklch(0.72 0.13 295));
 }
 
 .bbs-header h1 {
@@ -258,4 +258,62 @@
   .bbs-tile-art {
     transition: none;
   }
+}
+
+/* Theme picker */
+.bbs-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+  gap: 0.625rem;
+}
+.bbs-theme {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.5rem;
+  row-gap: 0.125rem;
+  align-items: center;
+  padding: 0.75rem;
+  border: 1px solid var(--bbs-line);
+  border-radius: var(--radius, 0.625rem);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 140ms ease;
+}
+.bbs-theme:hover {
+  border-color: color-mix(in oklch, var(--ink, currentColor) 25%, transparent);
+}
+.bbs-theme[aria-checked="true"] {
+  border-color: var(--swatch);
+  box-shadow: 0 0 0 1px var(--swatch);
+}
+.bbs-theme:focus-visible {
+  outline: 2px solid var(--bbs-accent);
+  outline-offset: 2px;
+}
+.bbs-theme-swatch {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: 0 0 10px -1px var(--swatch);
+}
+.bbs-theme-name {
+  font-size: var(--text-sm, 0.8125rem);
+  font-weight: 500;
+}
+.bbs-theme-detail {
+  grid-column: 1 / -1;
+  font-size: var(--text-xs, 0.75rem);
+  line-height: 1.125rem;
+  color: var(--muted-foreground);
+}
+.bbs-section > .bbs-themes + .bbs-section-detail {
+  margin-top: 0.5rem;
+}
+.bbs-list-tight {
+  margin-top: 0.875rem;
 }

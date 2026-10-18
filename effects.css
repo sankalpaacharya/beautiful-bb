@@ -1,0 +1,124 @@
+/* Effects: agent-done sparkle burst, the working-row wave glyph, the composer
+   accent border, and focus mode. All colors follow the theme accent. */
+
+:root {
+  --bbb-fx: var(--bbb-accent, oklch(0.55 0.17 295));
+}
+.dark {
+  --bbb-fx: var(--bbb-accent, oklch(0.78 0.11 295));
+}
+
+/* Sparkle burst over a sidebar row when its thread finishes. */
+.bbb-burst {
+  position: fixed;
+  z-index: 60;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.bbb-burst span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 10px;
+  line-height: 1;
+  color: var(--bbb-fx);
+  text-shadow: 0 0 6px var(--bbb-fx);
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0;
+  animation: bbb-spark 900ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes bbb-spark {
+  20% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--dx) * 0.4), calc(-50% + var(--dy) * 0.4)) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.6);
+  }
+}
+
+/* The working-row glyph: three bars rising in a wave. */
+.bbb-wave-icon rect {
+  fill: var(--bbb-fx);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: bbb-bar 900ms ease-in-out infinite;
+}
+.bbb-wave-icon rect:nth-child(2) {
+  animation-delay: 150ms;
+}
+.bbb-wave-icon rect:nth-child(3) {
+  animation-delay: 300ms;
+}
+@keyframes bbb-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Thread lists that don't draw plugin row statuses (such as the BB Sidebar
+   plugin) label working rows "Thread working"; give that label a three-dot
+   wave instead. */
+html[data-bbb-activity] [aria-label="Thread working"]::before {
+  content: "";
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  margin: 0 13px 1px 1px;
+  border-radius: 1px;
+  vertical-align: middle;
+  animation: bbb-dots 900ms steps(1, end) infinite;
+}
+@keyframes bbb-dots {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--bbb-fx) 100%, transparent), 4.5px 0 0 0 color-mix(in oklch, var(--bbb-fx) 35%, transparent), 9px 0 0 0 color-mix(in oklch, var(--bbb-fx) 35%, transparent);
+  }
+  33% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--bbb-fx) 35%, transparent), 4.5px 0 0 0 color-mix(in oklch, var(--bbb-fx) 100%, transparent), 9px 0 0 0 color-mix(in oklch, var(--bbb-fx) 35%, transparent);
+  }
+  66% {
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--bbb-fx) 35%, transparent), 4.5px 0 0 0 color-mix(in oklch, var(--bbb-fx) 35%, transparent), 9px 0 0 0 color-mix(in oklch, var(--bbb-fx) 100%, transparent);
+  }
+}
+
+/* Composer accent: a thin accent border while typing, no bloom. */
+html[data-bbb-glow] form[data-promptbox] {
+  transition: border-color 180ms ease;
+}
+html[data-bbb-glow] form[data-promptbox]:focus-within {
+  border-color: color-mix(in oklch, var(--bbb-fx) 60%, var(--border));
+}
+
+/* Focus mode: the sidebar is collapsed by features.ts; here the thread header
+   and the composer's secondary controls step back until hovered. */
+html[data-bbb-focus] [data-follow-up-composer] form[data-promptbox] ~ *,
+html[data-bbb-focus] header {
+  opacity: 0.25;
+  transition: opacity 200ms ease;
+}
+html[data-bbb-focus] [data-follow-up-composer] form[data-promptbox] ~ *:hover,
+html[data-bbb-focus] header:hover {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-bbb-activity] [aria-label="Thread working"]::before {
+    animation: none;
+    box-shadow: 0 0 0 0 color-mix(in oklch, var(--bbb-fx) 70%, transparent), 4.5px 0 0 0 color-mix(in oklch, var(--bbb-fx) 70%, transparent), 9px 0 0 0 color-mix(in oklch, var(--bbb-fx) 70%, transparent);
+  }
+  .bbb-wave-icon rect {
+    animation: none;
+    transform: scaleY(0.7);
+  }
+  html[data-bbb-glow] form[data-promptbox] {
+    transition: none;
+  }
+}

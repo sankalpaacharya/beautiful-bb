@@ -1,6 +1,7 @@
-// Beautiful bb frontend: the weekly usage card pinned above the sidebar footer.
-// Each harness is one line: logo, weekly limit progress bar, 7-day token bars,
-// percent used, and time until the limit resets.
+// Beautiful bb frontend entry. Registers every piece of the plugin: the usage
+// card above the sidebar footer (one line per harness: logo, weekly limit bar,
+// 7-day token bars, percent used, time to reset), the home wallpaper and
+// greeting, the settings page, the effects overlay, and command-menu actions.
 import { useCallback, useEffect, useState } from "react";
 import {
   definePluginApp,
@@ -12,11 +13,14 @@ import type { HarnessUsage, rpcContract } from "./server";
 import "./usage-card.css";
 import "./working-spinner.css";
 import { HomeWallpaper } from "./wallpaper";
-import { applyFeatures, setUsageCardController } from "./features";
+import { setRowStatusSetter, setUsageCardController, toggleFocusMode } from "./features";
 import { SettingsPage } from "./settings-page";
+import { EffectsOverlay } from "./overlay";
+import { HomeGreeting } from "./greeting";
+import { WaveIcon } from "./wave-icon";
+import { nextTheme, nextWallpaper } from "./actions";
 
 const REFRESH_MS = 2 * 60 * 1000;
-const FEATURES_REFRESH_MS = 15 * 1000;
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
@@ -127,6 +131,9 @@ function WeeklyUsageCard() {
 }
 
 export default definePluginApp((app) => {
+  app.experimental_icons.register({ name: "bbb-wave", component: WaveIcon });
+  app.slots.experimental_appOverlay({ id: "effects", component: EffectsOverlay });
+  app.slots.homepageSection({ id: "greeting", title: "Greeting", component: HomeGreeting });
   app.slots.homepageSection({ id: "wallpaper", title: "Wallpaper", component: HomeWallpaper });
   app.slots.navPanel({
     id: "settings",
@@ -135,6 +142,8 @@ export default definePluginApp((app) => {
     path: "settings",
     component: SettingsPage,
   });
+  // Its footer toggle is hidden by usage-card.css; EffectsOverlay opens or
+  // closes it from the Usage card setting.
   setUsageCardController(
     app.experimental_sidebarFooter.register({
       kind: "disclosure",
@@ -144,38 +153,23 @@ export default definePluginApp((app) => {
       component: WeeklyUsageCard,
     }),
   );
-  // Apply the feature switches from settings: open or close the usage card
-  // (its footer toggle is hidden by usage-card.css) and gate the wave spinner
-  // CSS on <html data-bbb-wave>. Re-checked on focus and every few seconds so
-  // a settings change shows up without a reload.
+  // Only a content script may decorate thread rows; hand its setter to the
+  // effects overlay, which marks working threads.
   app.contentScripts.register({
-    id: "apply-features",
-    mount({ pluginId, signal }) {
-      const root = document.documentElement;
-      const apply = async () => {
-        try {
-          const res = await fetch(`/api/v1/plugins/${encodeURIComponent(pluginId)}/rpc/features`, {
-            method: "POST",
-            headers: { "content-type": "application/json" },
-            body: "null",
-            signal,
-          });
-          if (!res.ok) return;
-          const body = await res.json();
-          const features = body?.result ?? body;
-          applyFeatures({ usageCard: features?.usageCard !== false, waveSpinner: features?.waveSpinner !== false });
-        } catch {
-          // Aborted on teardown, or the server is restarting; the next tick retries.
-        }
-      };
-      void apply();
-      const timer = window.setInterval(apply, FEATURES_REFRESH_MS);
-      window.addEventListener("focus", apply);
-      return () => {
-        window.clearInterval(timer);
-        window.removeEventListener("focus", apply);
-        root.removeAttribute("data-bbb-wave");
-      };
+    id: "thread-row-status",
+    mount(context) {
+      setRowStatusSetter(context.experimental_setThreadRowStatus ?? null);
+      return () => setRowStatusSetter(null);
     },
   });
+  app.commands.register({
+    id: "toggle-focus-mode",
+    title: "Beautiful bb: Toggle focus mode",
+    defaultShortcut: { key: "f", mod: true, shift: true },
+    run: () => {
+      toggleFocusMode();
+    },
+  });
+  app.commands.register({ id: "next-wallpaper", title: "Beautiful bb: Next wallpaper", run: nextWallpaper });
+  app.commands.register({ id: "next-theme", title: "Beautiful bb: Next theme", run: nextTheme });
 });

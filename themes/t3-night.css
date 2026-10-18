@@ -189,3 +189,28 @@ textarea,
 [data-sidebar="sidebar"] [data-testid="app-nav-rail"] {
   background-color: transparent;
 }
+
+/* T3 Night: T3 Code's zinc palette with a lavender accent and a starry sidebar. Generated from scripts/themes.mjs. */
+:root,
+.light {
+  --bbb-accent: oklch(0.55 0.17 295);
+  --primary: oklch(0.52 0.17 295);
+  --primary-foreground: #ffffff;
+  --file-accent: oklch(0.52 0.17 295);
+}
+.dark {
+  --bbb-accent: oklch(0.78 0.11 295);
+  --primary: oklch(0.74 0.12 295);
+  --primary-foreground: #0a0a0a;
+  --file-accent: oklch(0.78 0.11 295);
+}
+html:not(.dark),
+html .light {
+  --bb-sidebar-tone-working: oklch(0.55 0.17 295);
+  --bb-sidebar-tone-pending: oklch(0.55 0.17 295);
+}
+html.dark,
+html .dark {
+  --bb-sidebar-tone-working: oklch(0.78 0.11 295);
+  --bb-sidebar-tone-pending: oklch(0.78 0.11 295);
+}

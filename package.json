@@ -27,8 +27,42 @@
       {
         "id": "t3-night",
         "name": "T3 Night",
-        "description": "T3 Code's zinc and indigo palette with a starry sidebar banner",
-        "css": "./themes/t3-night.css"
+        "description": "T3 Code's zinc palette with a lavender accent and a starry sidebar",
+        "css": "./themes/t3-night.css",
+        "codeTheme": {
+          "dark": "./themes/t3-night-code-dark.json",
+          "light": "./themes/t3-night-code-light.json"
+        }
+      },
+      {
+        "id": "sakura",
+        "name": "Sakura",
+        "description": "Soft pink accents and a blossom-dusk sidebar",
+        "css": "./themes/sakura.css",
+        "codeTheme": {
+          "dark": "./themes/sakura-code-dark.json",
+          "light": "./themes/sakura-code-light.json"
+        }
+      },
+      {
+        "id": "terminal",
+        "name": "Terminal",
+        "description": "Phosphor green on black, monospace everywhere",
+        "css": "./themes/terminal.css",
+        "codeTheme": {
+          "dark": "./themes/terminal-code-dark.json",
+          "light": "./themes/terminal-code-light.json"
+        }
+      },
+      {
+        "id": "ember",
+        "name": "Ember",
+        "description": "Warm reds and oranges with a glowing ember sidebar",
+        "css": "./themes/ember.css",
+        "codeTheme": {
+          "dark": "./themes/ember-code-dark.json",
+          "light": "./themes/ember-code-light.json"
+        }
       }
     ],
     "app": "./app.tsx"

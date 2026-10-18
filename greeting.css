@@ -1,0 +1,50 @@
+/* Home greeting, sitting under the composer as a quiet status line. */
+
+section[id="plugin-homepage:beautiful-bb:greeting"] > :not([data-bb-plugin-root]) {
+  display: none;
+}
+
+.bbb-greeting {
+  padding: 0 0.25rem;
+}
+.bbb-greeting-hello {
+  margin: 0;
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+.bbb-greeting-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  margin: 0.25rem 0 0;
+  font-size: var(--text-sm, 0.8125rem);
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.bbb-greeting-meta button {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.bbb-greeting-meta button:hover {
+  color: var(--foreground);
+}
+.bbb-greeting-meta button:focus-visible {
+  outline: 2px solid var(--bbb-accent, var(--primary));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.bbb-greeting-ago {
+  margin-left: 0.25rem;
+  opacity: 0.7;
+}

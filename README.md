@@ -7,15 +7,29 @@ rail. Changes apply right away. The same settings are also available with
 
 | Setting | What it does | Default |
 | --- | --- | --- |
+| Theme | T3 Night, Sakura, Terminal, Ember, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
+| Agent activity | A wave on working threads in the sidebar, sparkles when one finishes | On |
 | Wave spinner | Wave spinner instead of the "Working..." shimmer | On |
-| Home wallpaper | Art behind the home screen: None, one of six built-in pieces, or Custom image | None |
+| Composer accent | Thin accent border on the message box while typing | Off |
+| Focus mode | Hides the sidebar and dims chrome; Cmd+Shift+F | Off |
+| Home greeting | Hello, today's tokens, and the last finished thread on the home screen | On |
+| Living wallpaper | The ASCII wallpaper flickers gently with a slow scan line | On |
+| Home wallpaper | None, one of six built-in pieces, or Custom image | None |
 | Custom wallpaper image | Image URL or file path, used with Custom image | Empty |
 | Wallpaper style | Colorful ASCII, ASCII, or Photo | Colorful ASCII |
 
-The T3 Night theme has its own switch on the page, or pick it in Settings → Appearance.
+Command menu (Cmd+Shift+P): **Beautiful bb: Toggle focus mode**, **Next wallpaper**, **Next theme**.
+
+Themes can also be picked in Settings → Appearance. Each comes with matching code colors for diffs and code blocks.
 
 ## Themes
+
+Four themes, built from `scripts/themes.mjs` by `node scripts/build-themes.mjs`
+(theme CSS, code themes, and the manifest's theme list): **T3 Night**
+(lavender), **Sakura** (pink, pairs with the kitsune), **Terminal** (phosphor
+green, monospace everywhere, pairs with the coder), and **Ember** (red-orange,
+pairs with the samurai).
 
 ### T3 Night
 

@@ -1,17 +1,21 @@
 // Beautiful bb backend. Themes load from `bb.themes` in package.json. This
 // entry owns the feature settings (each feature can be switched off), serves
 // the sidebar usage card's data, and serves the home wallpaper image.
+import { execFile } from "node:child_process";
 import { createReadStream, existsSync } from "node:fs";
 import { stat } from "node:fs/promises";
-import { homedir } from "node:os";
+import { homedir, userInfo } from "node:os";
 import { dirname, extname, join, resolve } from "node:path";
 import { Readable } from "node:stream";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import { defineRpcContract, type BbPluginApi } from "@get-bb/plugin-sdk";
 import { z } from "zod";
 import { dailyTokens, type DailyTokens } from "./tokens";
 
 const TOKENS_TTL_MS = 5 * 60 * 1000;
+/** Realtime channel: published whenever a setting changes, so every window re-applies. */
+export const SETTINGS_CHANGED = "settings-changed";
 
 const harnessSchema = z.object({
   id: z.string(),
@@ -31,6 +35,10 @@ export const rpcContract = defineRpcContract({
   features: {
     input: z.null(),
     output: z.object({ usageCard: z.boolean(), waveSpinner: z.boolean() }),
+  },
+  greeting: {
+    input: z.null(),
+    output: z.object({ name: z.string().nullable(), tokensToday: z.number() }),
   },
   settings_get: {
     input: z.null(),
@@ -61,6 +69,10 @@ const STYLE_IDS = ["ascii-color", "ascii", "photo"] as const;
 const preferencesSchema = z.object({
   usageCard: z.boolean(),
   waveSpinner: z.boolean(),
+  agentActivity: z.boolean(),
+  composerGlow: z.boolean(),
+  homeGreeting: z.boolean(),
+  livingWallpaper: z.boolean(),
   wallpaper: z.enum(WALLPAPER_IDS),
   customWallpaper: z.string().max(2048),
   wallpaperStyle: z.enum(STYLE_IDS),
@@ -119,6 +131,30 @@ export default async function plugin(bb: BbPluginApi) {
       description: 'Replace the shimmering "Working..." text in a running thread with a wave spinner.',
       default: true,
     },
+    agentActivity: {
+      type: "boolean",
+      label: "Agent activity",
+      description: "A tiny wave on working threads in the sidebar, and a burst of sparkles when one finishes.",
+      default: true,
+    },
+    composerGlow: {
+      type: "boolean",
+      label: "Composer accent",
+      description: "A thin accent border on the message box while you type.",
+      default: false,
+    },
+    homeGreeting: {
+      type: "boolean",
+      label: "Home greeting",
+      description: "A greeting with today's token count on the new-thread screen.",
+      default: true,
+    },
+    livingWallpaper: {
+      type: "boolean",
+      label: "Living wallpaper",
+      description: "Let the ASCII wallpaper flicker gently, with a slow scan line.",
+      default: true,
+    },
     wallpaper: {
       type: "select",
       label: "Home wallpaper",
@@ -158,6 +194,20 @@ export default async function plugin(bb: BbPluginApi) {
   }
 
   const readPreferences = async (): Promise<Preferences> => preferencesSchema.parse(await settings.get());
+  settings.onChange(() => bb.realtime.publish(SETTINGS_CHANGED, null));
+
+  // First name for the home greeting: git's user.name, else the account name.
+  const firstName = (async () => {
+    try {
+      const { stdout } = await promisify(execFile)("git", ["config", "--global", "user.name"], { timeout: 2000 });
+      const name = stdout.trim().split(/\s+/)[0];
+      if (name) return name;
+    } catch {
+      // No git or no user.name; fall back below.
+    }
+    const user = userInfo().username;
+    return user ? user[0]!.toUpperCase() + user.slice(1) : null;
+  })();
 
   // Reading session logs walks directories; reuse the result for a few minutes.
   let tokensCache: { at: number; byProvider: Record<string, DailyTokens> } | null = null;
@@ -182,6 +232,11 @@ export default async function plugin(bb: BbPluginApi) {
         harnesses: weekly.map((w) => ({ ...w, name: NAMES[w.id] ?? w.id, daily: tokens[w.id] ?? [] })),
         observedAt: Date.now(),
       };
+    },
+    greeting: async () => {
+      const daily = await tokensFor(["claude-code", "codex"]);
+      const tokensToday = Object.values(daily).reduce((sum, days) => sum + (days.at(-1) ?? 0), 0);
+      return { name: await firstName, tokensToday };
     },
     settings_get: readPreferences,
     settings_set: async (changes) => {
