@@ -10,6 +10,7 @@ import {
 } from "@get-bb/plugin-sdk/app";
 import type { HarnessUsage, rpcContract } from "./server";
 import "./usage-card.css";
+import "./working-spinner.css";
 
 const REFRESH_MS = 2 * 60 * 1000;
 const HOUR_MS = 60 * 60 * 1000;

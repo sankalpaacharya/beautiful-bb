@@ -26,6 +26,13 @@ Token counts come from the harnesses' local session logs (`~/.claude/projects`
 and `~/.codex/sessions`), so work outside bb counts too. They include input,
 output, and cache writes, not cache reads.
 
+## Wave spinner
+
+The shimmering "Working..." line in a running thread becomes a 3x3 lavender
+wave spinner (after [WaveSpinner](https://ui.heygaia.io/docs/components/wave-spinner)).
+\`working-spinner.css\` is generated: edit \`scripts/build-wave-spinner.mjs\` and
+run \`node scripts/build-wave-spinner.mjs\`.
+
 ## Install
 
 ```sh
