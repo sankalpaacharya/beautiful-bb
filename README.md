@@ -1,8 +1,9 @@
 # Beautiful bb
 
 Themes and UI polish for [bb](https://getbb.app). Every feature can be switched
-on or off in the plugin's settings (Plugins → Beautiful bb, or
-`bb plugin config beautiful-bb`).
+on or off from the plugin's own page: click the sparkle icon in bb's left
+rail. Changes apply right away. The same settings are also available with
+`bb plugin config beautiful-bb`.
 
 | Setting | What it does | Default |
 | --- | --- | --- |
@@ -12,7 +13,7 @@ on or off in the plugin's settings (Plugins → Beautiful bb, or
 | Custom wallpaper image | Image URL or file path, used with Custom image | Empty |
 | Wallpaper style | Colorful ASCII, ASCII, or Photo | Colorful ASCII |
 
-The T3 Night theme is picked in Settings → Appearance.
+The T3 Night theme has its own switch on the page, or pick it in Settings → Appearance.
 
 ## Themes
 

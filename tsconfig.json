@@ -18,8 +18,10 @@
   "include": [
     "server.ts",
     "tokens.ts",
+    "features.ts",
     "app.tsx",
     "wallpaper.tsx",
+    "settings-page.tsx",
     "css.d.ts"
   ]
 }

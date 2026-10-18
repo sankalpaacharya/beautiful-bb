@@ -17,7 +17,10 @@
     "name": "Beautiful bb",
     "description": "Make bb beautiful: the T3 Night theme, a compact usage card, a wave spinner, and anime home wallpapers drawn in ASCII. Switch each feature on or off in settings.",
     "branding": {
-      "icon": "./assets/icon.svg"
+      "icon": "./assets/icon.svg",
+      "experimental_icons": {
+        "sparkle": "./assets/icon.svg"
+      }
     },
     "server": "./server.ts",
     "themes": [

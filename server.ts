@@ -32,6 +32,14 @@ export const rpcContract = defineRpcContract({
     input: z.null(),
     output: z.object({ usageCard: z.boolean(), waveSpinner: z.boolean() }),
   },
+  settings_get: {
+    input: z.null(),
+    output: z.lazy(() => preferencesSchema),
+  },
+  settings_set: {
+    input: z.lazy(() => preferencesSchema.partial()),
+    output: z.lazy(() => preferencesSchema),
+  },
 });
 
 const NAMES: Record<string, string> = { "claude-code": "Claude", codex: "Codex" };
@@ -45,6 +53,19 @@ export const BUILT_IN_WALLPAPERS = {
   samurai: "Samurai",
   robot: "Robot buddy",
 } as const;
+
+const WALLPAPER_IDS = ["none", ...Object.keys(BUILT_IN_WALLPAPERS), "custom"] as const;
+const STYLE_IDS = ["ascii-color", "ascii", "photo"] as const;
+
+/** Everything the plugin's settings page reads and writes. */
+const preferencesSchema = z.object({
+  usageCard: z.boolean(),
+  waveSpinner: z.boolean(),
+  wallpaper: z.enum(WALLPAPER_IDS),
+  customWallpaper: z.string().max(2048),
+  wallpaperStyle: z.enum(STYLE_IDS),
+});
+export type Preferences = z.infer<typeof preferencesSchema>;
 
 const IMAGE_TYPES: Record<string, string> = {
   ".jpg": "image/jpeg",
@@ -102,7 +123,7 @@ export default async function plugin(bb: BbPluginApi) {
       type: "select",
       label: "Home wallpaper",
       description: "Art behind the home screen (the new-thread page, also opened with Cmd+N).",
-      options: ["none", ...Object.keys(BUILT_IN_WALLPAPERS), "custom"],
+      options: [...WALLPAPER_IDS],
       experimental_optionLabels: { none: "None", ...BUILT_IN_WALLPAPERS, custom: "Custom image" },
       default: "none",
     },
@@ -116,7 +137,7 @@ export default async function plugin(bb: BbPluginApi) {
       type: "select",
       label: "Wallpaper style",
       description: "Draw the wallpaper as a colorful ASCII texture, a one-color ASCII texture, or the image itself.",
-      options: ["ascii-color", "ascii", "photo"],
+      options: [...STYLE_IDS],
       experimental_optionLabels: { "ascii-color": "Colorful ASCII", ascii: "ASCII", photo: "Photo" },
       default: "ascii-color",
     },
@@ -130,6 +151,13 @@ export default async function plugin(bb: BbPluginApi) {
     const path = wallpaper === "custom" ? localPath(customWallpaper) : null;
     return path ? serveImage(path) : new Response("No wallpaper file is set", { status: 404 });
   });
+
+  // Thumbnails for the settings page's wallpaper picker.
+  for (const id of Object.keys(BUILT_IN_WALLPAPERS)) {
+    bb.http.route("GET", `/wallpapers/${id}`, () => serveImage(join(assetsDir(), "wallpapers", `${id}.jpg`)));
+  }
+
+  const readPreferences = async (): Promise<Preferences> => preferencesSchema.parse(await settings.get());
 
   // Reading session logs walks directories; reuse the result for a few minutes.
   let tokensCache: { at: number; byProvider: Record<string, DailyTokens> } | null = null;
@@ -154,6 +182,11 @@ export default async function plugin(bb: BbPluginApi) {
         harnesses: weekly.map((w) => ({ ...w, name: NAMES[w.id] ?? w.id, daily: tokens[w.id] ?? [] })),
         observedAt: Date.now(),
       };
+    },
+    settings_get: readPreferences,
+    settings_set: async (changes) => {
+      await settings.experimental_set(changes);
+      return readPreferences();
     },
     features: async () => {
       const { usageCard, waveSpinner } = await settings.get();

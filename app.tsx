@@ -12,6 +12,8 @@ import type { HarnessUsage, rpcContract } from "./server";
 import "./usage-card.css";
 import "./working-spinner.css";
 import { HomeWallpaper } from "./wallpaper";
+import { applyFeatures, setUsageCardController } from "./features";
+import { SettingsPage } from "./settings-page";
 
 const REFRESH_MS = 2 * 60 * 1000;
 const FEATURES_REFRESH_MS = 15 * 1000;
@@ -126,13 +128,22 @@ function WeeklyUsageCard() {
 
 export default definePluginApp((app) => {
   app.slots.homepageSection({ id: "wallpaper", title: "Wallpaper", component: HomeWallpaper });
-  const card = app.experimental_sidebarFooter.register({
-    kind: "disclosure",
-    id: "weekly-usage",
-    label: "Weekly usage",
-    icon: "ChartColumn",
-    component: WeeklyUsageCard,
+  app.slots.navPanel({
+    id: "settings",
+    title: "Beautiful bb",
+    icon: "beautiful-bb/sparkle",
+    path: "settings",
+    component: SettingsPage,
   });
+  setUsageCardController(
+    app.experimental_sidebarFooter.register({
+      kind: "disclosure",
+      id: "weekly-usage",
+      label: "Weekly usage",
+      icon: "ChartColumn",
+      component: WeeklyUsageCard,
+    }),
+  );
   // Apply the feature switches from settings: open or close the usage card
   // (its footer toggle is hidden by usage-card.css) and gate the wave spinner
   // CSS on <html data-bbb-wave>. Re-checked on focus and every few seconds so
@@ -151,10 +162,8 @@ export default definePluginApp((app) => {
           });
           if (!res.ok) return;
           const body = await res.json();
-          const features = (body?.result ?? body) as { usageCard?: boolean; waveSpinner?: boolean };
-          if (features.usageCard === false) card.close();
-          else card.open();
-          root.toggleAttribute("data-bbb-wave", features.waveSpinner !== false);
+          const features = body?.result ?? body;
+          applyFeatures({ usageCard: features?.usageCard !== false, waveSpinner: features?.waveSpinner !== false });
         } catch {
           // Aborted on teardown, or the server is restarting; the next tick retries.
         }
