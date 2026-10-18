@@ -15,6 +15,15 @@ The look of [T3 Code](https://github.com/pingdotgg/t3code) in bb:
   with T3 Code's violet and built on the Hubble eXtreme Deep Field
 - Indigo text selection and cursor, slim scrollbars
 
+## Weekly usage card
+
+A card above the sidebar footer shows each signed-in agent harness (Claude,
+Codex) with its weekly limit as a burn-up chart: the week's measured usage,
+a dashed even-pace line, and a dotted projection to the reset. It stays dim
+until you hover or focus it, then shows the reset time and whether you are
+on pace or projected to run out. Toggle it with the chart button in the
+sidebar footer. The plugin samples usage every 10 minutes to draw the curve.
+
 ## Install
 
 ```sh

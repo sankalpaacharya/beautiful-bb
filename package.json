@@ -15,7 +15,7 @@
   },
   "bb": {
     "name": "Beautiful bb",
-    "description": "Themes and UI polish for bb, starting with T3 Night: the T3 Code palette, system fonts, larger text, and a starry sidebar banner.",
+    "description": "Themes and UI polish for bb: the T3 Night theme and a weekly usage card with burn-up charts for each agent harness.",
     "branding": {
       "icon": "Zap"
     },
@@ -27,11 +27,19 @@
         "description": "T3 Code's zinc and indigo palette with a starry sidebar banner",
         "css": "./themes/t3-night.css"
       }
-    ]
+    ],
+    "app": "./app.tsx"
   },
   "devDependencies": {
     "@get-bb/plugin-sdk": "0.6.49",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "hono": "^4.13.13",
     "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
   }
 }
