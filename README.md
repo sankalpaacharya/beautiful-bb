@@ -1,6 +1,18 @@
 # Beautiful bb
 
-Themes and UI polish for [bb](https://getbb.app).
+Themes and UI polish for [bb](https://getbb.app). Every feature can be switched
+on or off in the plugin's settings (Plugins → Beautiful bb, or
+`bb plugin config beautiful-bb`).
+
+| Setting | What it does | Default |
+| --- | --- | --- |
+| Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
+| Wave spinner | Wave spinner instead of the "Working..." shimmer | On |
+| Home wallpaper | Art behind the home screen: None, one of six built-in pieces, or Custom image | None |
+| Custom wallpaper image | Image URL or file path, used with Custom image | Empty |
+| Wallpaper style | Colorful ASCII, ASCII, or Photo | Colorful ASCII |
+
+The T3 Night theme is picked in Settings → Appearance.
 
 ## Themes
 
@@ -32,6 +44,15 @@ The shimmering "Working..." line in a running thread becomes a 3x3 lavender
 wave spinner (after [WaveSpinner](https://ui.heygaia.io/docs/components/wave-spinner)).
 `working-spinner.css` is generated: edit `scripts/build-wave-spinner.mjs` and
 run `node scripts/build-wave-spinner.mjs`.
+
+## Home wallpaper
+
+The home screen (the new-thread page, also opened with Cmd+N) can show art
+behind the composer, redrawn as an ASCII texture in the style of a terminal
+printout. Colorful ASCII keeps each character tinted with the image's colors.
+Six original anime pieces ship with the plugin, made for it with GPT-6-Astra:
+headphones girl, late-night coder, astronaut capybara, sleeping kitsune,
+samurai, and robot buddy. Choose Custom image to use your own.
 
 ## Install
 

@@ -19,6 +19,7 @@
     "server.ts",
     "tokens.ts",
     "app.tsx",
+    "wallpaper.tsx",
     "css.d.ts"
   ]
 }

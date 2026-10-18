@@ -15,9 +15,9 @@
   },
   "bb": {
     "name": "Beautiful bb",
-    "description": "Themes and UI polish for bb: the T3 Night theme and a weekly usage card with burn-up charts for each agent harness.",
+    "description": "Make bb beautiful: the T3 Night theme, a compact usage card, a wave spinner, and anime home wallpapers drawn in ASCII. Switch each feature on or off in settings.",
     "branding": {
-      "icon": "Zap"
+      "icon": "./assets/icon.svg"
     },
     "server": "./server.ts",
     "themes": [

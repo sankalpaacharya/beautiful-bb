@@ -1,0 +1,45 @@
+/* Home wallpaper. The layer sits in the home pane (the nearest positioned
+   ancestor), behind the composer and recent threads, and fades out toward the
+   composer at the top so typing stays readable. */
+
+/* bb gives every home section a heading; this one is only a backdrop. */
+section[id="plugin-homepage:beautiful-bb:wallpaper"] {
+  margin: 0;
+}
+section[id="plugin-homepage:beautiful-bb:wallpaper"] > :not([data-bb-plugin-root]) {
+  display: none;
+}
+
+/* Contain the negative z-index so the art paints above the pane background
+   but below its content. */
+.relative:has(> .overflow-y-auto .bbb-wallpaper) {
+  isolation: isolate;
+}
+
+.bbb-wallpaper {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--ink, var(--foreground));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 55%) 30%, #000 60%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 55%) 30%, #000 60%);
+}
+
+.bbb-wallpaper-ascii {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0.28;
+}
+.bbb-wallpaper[data-style="ascii-color"] .bbb-wallpaper-ascii {
+  opacity: 0.42;
+}
+
+.bbb-wallpaper-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.35;
+}

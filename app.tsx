@@ -11,8 +11,10 @@ import {
 import type { HarnessUsage, rpcContract } from "./server";
 import "./usage-card.css";
 import "./working-spinner.css";
+import { HomeWallpaper } from "./wallpaper";
 
 const REFRESH_MS = 2 * 60 * 1000;
+const FEATURES_REFRESH_MS = 15 * 1000;
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
 
@@ -123,6 +125,7 @@ function WeeklyUsageCard() {
 }
 
 export default definePluginApp((app) => {
+  app.slots.homepageSection({ id: "wallpaper", title: "Wallpaper", component: HomeWallpaper });
   const card = app.experimental_sidebarFooter.register({
     kind: "disclosure",
     id: "weekly-usage",
@@ -130,12 +133,40 @@ export default definePluginApp((app) => {
     icon: "ChartColumn",
     component: WeeklyUsageCard,
   });
-  // Always show the card; usage-card.css hides its footer toggle button.
+  // Apply the feature switches from settings: open or close the usage card
+  // (its footer toggle is hidden by usage-card.css) and gate the wave spinner
+  // CSS on <html data-bbb-wave>. Re-checked on focus and every few seconds so
+  // a settings change shows up without a reload.
   app.contentScripts.register({
-    id: "open-weekly-usage",
-    mount() {
-      card.open();
-      return () => {};
+    id: "apply-features",
+    mount({ pluginId, signal }) {
+      const root = document.documentElement;
+      const apply = async () => {
+        try {
+          const res = await fetch(`/api/v1/plugins/${encodeURIComponent(pluginId)}/rpc/features`, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: "null",
+            signal,
+          });
+          if (!res.ok) return;
+          const body = await res.json();
+          const features = (body?.result ?? body) as { usageCard?: boolean; waveSpinner?: boolean };
+          if (features.usageCard === false) card.close();
+          else card.open();
+          root.toggleAttribute("data-bbb-wave", features.waveSpinner !== false);
+        } catch {
+          // Aborted on teardown, or the server is restarting; the next tick retries.
+        }
+      };
+      void apply();
+      const timer = window.setInterval(apply, FEATURES_REFRESH_MS);
+      window.addEventListener("focus", apply);
+      return () => {
+        window.clearInterval(timer);
+        window.removeEventListener("focus", apply);
+        root.removeAttribute("data-bbb-wave");
+      };
     },
   });
 });
