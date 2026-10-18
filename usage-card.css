@@ -2,6 +2,12 @@
    lifts the opacity, nothing resizes. One lavender accent, matched to the T3
    Night sidebar banner, colors every bar so the rows read as a set. */
 
+/* The card is always shown (opened on load), so its footer toggle button
+   would only add clutter. */
+li[data-footer-item="plugin:beautiful-bb/weekly-usage"] {
+  display: none;
+}
+
 .bbb-card {
   --bbb-accent: oklch(0.55 0.17 295);
   --bbb-track: color-mix(in oklch, var(--ink, currentColor) 10%, transparent);

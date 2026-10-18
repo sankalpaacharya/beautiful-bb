@@ -20,7 +20,7 @@ The look of [T3 Code](https://github.com/pingdotgg/t3code) in bb:
 A compact card above the sidebar footer shows each signed-in agent harness
 (Claude, Codex): its weekly limit as a progress bar with the time until reset,
 and a 7-day bar graph of tokens used per day. It stays dim until you hover or
-focus it. Toggle it with the chart button in the sidebar footer.
+focus it.
 
 Token counts come from the harnesses' local session logs (`~/.claude/projects`
 and `~/.codex/sessions`), so work outside bb counts too. They include input,

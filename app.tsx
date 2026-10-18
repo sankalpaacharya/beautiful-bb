@@ -129,7 +129,7 @@ export default definePluginApp((app) => {
     icon: "ChartColumn",
     component: WeeklyUsageCard,
   });
-  // Show the card by default; the footer button still hides and reveals it.
+  // Always show the card; usage-card.css hides its footer toggle button.
   app.contentScripts.register({
     id: "open-weekly-usage",
     mount() {
