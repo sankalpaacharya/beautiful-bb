@@ -43,28 +43,3 @@ section[id="plugin-homepage:beautiful-bb:wallpaper"] > :not([data-bb-plugin-root
   object-fit: cover;
   opacity: 0.35;
 }
-
-/* Living wallpaper: a faint scan line drifting down over the art. */
-.bbb-wallpaper[data-living]::after {
-  content: "";
-  position: absolute;
-  inset: -20% 0 auto 0;
-  height: 18%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    color-mix(in oklch, var(--bbb-accent, var(--ink)) 7%, transparent),
-    transparent
-  );
-  animation: bbb-scan 9s linear infinite;
-}
-@keyframes bbb-scan {
-  to {
-    transform: translateY(700%);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bbb-wallpaper[data-living]::after {
-    display: none;
-  }
-}

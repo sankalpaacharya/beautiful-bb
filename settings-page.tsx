@@ -226,7 +226,7 @@ export function SettingsPage() {
           />
           <Row
             title="Living wallpaper"
-            detail="The ASCII art flickers gently, with a slow scan line."
+            detail="The ASCII art flickers gently, like a terminal printout."
             control={
               <Switch label="Living wallpaper" checked={prefs.livingWallpaper} onChange={(v) => update({ livingWallpaper: v })} />
             }

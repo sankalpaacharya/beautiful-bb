@@ -14,7 +14,7 @@ rail. Changes apply right away. The same settings are also available with
 | Composer accent | Thin accent border on the message box while typing | Off |
 | Focus mode | Hides the sidebar and dims chrome; Cmd+Shift+F | Off |
 | Home greeting | Hello, today's tokens, and the last finished thread on the home screen | On |
-| Living wallpaper | The ASCII wallpaper flickers gently with a slow scan line | On |
+| Living wallpaper | The ASCII wallpaper flickers gently | On |
 | Home wallpaper | None, one of six built-in pieces, or Custom image | None |
 | Custom wallpaper image | Image URL or file path, used with Custom image | Empty |
 | Wallpaper style | Colorful ASCII, ASCII, or Photo | Colorful ASCII |

@@ -152,7 +152,7 @@ export default async function plugin(bb: BbPluginApi) {
     livingWallpaper: {
       type: "boolean",
       label: "Living wallpaper",
-      description: "Let the ASCII wallpaper flicker gently, with a slow scan line.",
+      description: "Let the ASCII wallpaper flicker gently, like a terminal printout.",
       default: true,
     },
     wallpaper: {
