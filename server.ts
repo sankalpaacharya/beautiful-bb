@@ -73,6 +73,8 @@ const preferencesSchema = z.object({
   composerGlow: z.boolean(),
   homeGreeting: z.boolean(),
   livingWallpaper: z.boolean(),
+  /** Text size as a percent of bb's default type scale. */
+  fontScale: z.number().int().min(85).max(140),
   wallpaper: z.enum(WALLPAPER_IDS),
   customWallpaper: z.string().max(2048),
   wallpaperStyle: z.enum(STYLE_IDS),
@@ -148,6 +150,12 @@ export default async function plugin(bb: BbPluginApi) {
       label: "Home greeting",
       description: "A greeting with today's token count on the new-thread screen.",
       default: true,
+    },
+    fontScale: {
+      type: "number",
+      label: "Text size",
+      description: "Text size across bb, as a percent of bb's default (85 to 140). Spacing stays the same.",
+      default: 107,
     },
     livingWallpaper: {
       type: "boolean",

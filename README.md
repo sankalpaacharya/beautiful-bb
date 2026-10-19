@@ -8,6 +8,7 @@ rail. Changes apply right away. The same settings are also available with
 | Setting | What it does | Default |
 | --- | --- | --- |
 | Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
+| Text size | Slider from 85% to 140% that resizes text everywhere, in every theme | 107% |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
 | Agent activity | A wave on working threads in the sidebar, sparkles when one finishes | On |
 | Wave spinner | Wave spinner instead of the "Working..." shimmer | On |

@@ -1,10 +1,10 @@
 // The plugin's page in the bb nav rail: one place to switch each Beautiful bb
 // change on or off and to pick the home wallpaper. New features add a row here.
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { experimental_usePluginId as usePluginId, useRpc, useSdk } from "@get-bb/plugin-sdk/app";
 import type { Preferences, rpcContract } from "./server";
-import { applyFeatures, toggleFocusMode } from "./features";
+import { applyFeatures, applyFontScale, toggleFocusMode } from "./features";
 import { applyTheme, themeSelectionId } from "./actions";
 import { THEME_PACK } from "./theme-pack";
 import { AsciiArt } from "./wallpaper";
@@ -65,6 +65,44 @@ function Row({ title, detail, control }: { title: string; detail: string; contro
 }
 
 /** The active pack theme id, or "default" when bb's own palette (or another theme) is on. */
+const DEFAULT_FONT_SCALE = 107;
+
+/** Text size slider: resizes live while dragging, saves once the hand settles. */
+function TextSize({ value, onSave }: { value: number; onSave: (percent: number) => void }) {
+  const [draft, setDraft] = useState(value);
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => setDraft(value), [value]);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const change = (percent: number) => {
+    setDraft(percent);
+    applyFontScale(percent);
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => onSave(percent), 400);
+  };
+  return (
+    <div className="bbs-textsize">
+      <span className="bbs-textsize-sample" aria-hidden="true" style={{ fontSize: `${(draft / 100) * 1.5}rem` }}>
+        Aa
+      </span>
+      <input
+        type="range"
+        min={85}
+        max={140}
+        step={1}
+        value={draft}
+        aria-label="Text size"
+        aria-valuetext={`${draft} percent`}
+        style={{ ["--fill" as string]: `${((draft - 85) / (140 - 85)) * 100}%` }}
+        onChange={(e) => change(Number(e.target.value))}
+      />
+      <span className="bbs-textsize-value">{draft}%</span>
+      <button type="button" disabled={draft === DEFAULT_FONT_SCALE} onClick={() => change(DEFAULT_FONT_SCALE)}>
+        Reset
+      </button>
+    </div>
+  );
+}
+
 function useActiveTheme() {
   const sdk = useSdk();
   const [active, setActive] = useState<string | null>(null);
@@ -173,6 +211,14 @@ export function SettingsPage() {
           ))}
         </div>
         <p className="bbs-section-detail">Popular editor themes in their official colors, with matching code colors. Each also switches the home wallpaper to the one it pairs with, when a built-in wallpaper is on.</p>
+      </section>
+
+      <section className="bbs-section" aria-labelledby="bbs-textsize">
+        <h2 id="bbs-textsize">Text size</h2>
+        <div className="bbs-list">
+          <TextSize value={prefs.fontScale} onSave={(fontScale) => update({ fontScale })} />
+        </div>
+        <p className="bbs-section-detail">Resizes text across bb, in every theme. Spacing and layout stay the same.</p>
       </section>
 
       <section className="bbs-section" aria-labelledby="bbs-sidebar">
