@@ -60,6 +60,9 @@ A compact card above the sidebar footer shows each signed-in agent harness
 and a 7-day bar graph of tokens used per day. It stays dim until you hover or
 focus it.
 
+The sidebar footer shows one panel at a time, so opening bb's own Usage panel
+hides the card; it comes back as soon as you close that panel.
+
 Token counts come from the harnesses' local session logs (`~/.claude/projects`
 and `~/.codex/sessions`), so work outside bb counts too. They include input,
 output, and cache writes, not cache reads.
