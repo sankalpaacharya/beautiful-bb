@@ -8,21 +8,20 @@ rail. Changes apply right away. The same settings are also available with
 | Setting | What it does | Default |
 | --- | --- | --- |
 | Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
-| Font | Theme default, Inter, Geist, IBM Plex Sans, or Shippori Mincho for interface text; web fonts load from Google Fonts | Theme default |
-| Text size | Slider from 85% to 140% that resizes text everywhere, in every theme | 107% |
+| Font | Theme default, bb's bundled Inter, or any Google Fonts family, from a searchable dropdown that previews each font | Theme default |
+| Text size | Slider from 85% to 140% that scales the active theme's own text sizes; 100% leaves them as the theme sets them | 100% |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
 | Agent activity | A wave on working threads in the sidebar, sparkles when one finishes | On |
 | Wave spinner | 4x4 shade grid instead of the "Working..." shimmer | On |
 | Composer accent | Thin accent border on the message box while typing | Off |
 | Focus mode | Hides the sidebar and dims chrome; Cmd+Shift+F | Off |
 | Home greeting | Hello, today's tokens, and the last finished thread on the home screen | On |
-| Home wallpaper | None, Dither, Glow, one of six built-in pieces, or Custom image | Dither |
-| Rail dither | The Dither pattern rising from the bottom of the navigation rail | On |
-| Wallpaper color | Teal, Indigo, Amber, Rose, Theme accent, or Neutral, for Dither and Glow | Indigo |
-| Animate wallpaper | Dither and Glow drift slowly; reduced motion keeps them still | On |
-| Custom wallpaper image | Image URL or file path, used with Custom image | Empty |
+| Home wallpaper | None, Dither, Faulty terminal, or Gradient ASCII | Dither |
+| Rail pattern | The home wallpaper's pattern rising from the bottom of the navigation rail | On |
+| Wallpaper color | Theme accent (follows the active theme), Teal, Indigo, Amber, Rose, or Neutral, for the wallpaper and the rail | Theme accent |
+| Animate wallpaper | The wallpaper and the rail move slowly; reduced motion keeps them still | On |
 
-Command menu (Cmd+Shift+P): **Beautiful bb: Toggle focus mode**, **Next wallpaper**, **Next theme**.
+Command menu (Cmd+Shift+P): **Beautiful bb: Toggle focus mode**, **Next theme**.
 
 Themes can also be picked in Settings → Appearance. Each comes with matching code colors for diffs and code blocks.
 
@@ -78,16 +77,14 @@ run `node scripts/build-wave-spinner.mjs`.
 ## Home wallpaper
 
 The home screen (the new-thread page, also opened with Cmd+N) shows a slowly
-drifting WebGL pattern along the top of the pane by default, dense at the left
-and right edges and thin in the middle. Dither draws it as small squares
-through an 8x8 Bayer matrix, after React Bits'
-[Dither](https://reactbits.dev/backgrounds/dither) background; Glow draws it
-as a soft glow under a faint halftone grain. Both fade out before the composer,
-and without WebGL the home screen simply shows no wallpaper. Pick an image
-instead to show it as a faded photo.
-Six original anime pieces ship with the plugin, made for it with GPT-6-Astra:
-headphones girl, late-night coder, astronaut capybara, sleeping kitsune,
-samurai, and robot buddy. Choose Custom image to use your own.
+moving WebGL effect along the top of the pane, dense at the left and right
+edges and thin in the middle, fading out before the composer. Each effect is a
+port of a React Bits background, tinted with the wallpaper color:
+[Dither](https://reactbits.dev/backgrounds/dither),
+[Faulty Terminal](https://reactbits.dev/backgrounds/faulty-terminal), and
+[Gradient ASCII](https://reactbits.dev/backgrounds/gradient-ascii). Without
+WebGL the home screen simply shows no wallpaper. Each effect lives in
+`shaders/` behind the small `EffectFactory` interface in `shaders/types.ts`.
 
 ## Install
 

@@ -1,26 +1,19 @@
 // Beautiful bb backend. Themes load from `bb.themes` in package.json. This
-// entry owns the feature settings (each feature can be switched off), serves
-// the sidebar usage card's data, and serves the home wallpaper image.
+// entry owns the feature settings (each feature can be switched off) and serves
+// the sidebar usage card's and home greeting's data.
 import { execFile } from "node:child_process";
-import { createReadStream, existsSync } from "node:fs";
-import { stat } from "node:fs/promises";
-import { homedir, userInfo } from "node:os";
-import { dirname, extname, join, resolve } from "node:path";
-import { Readable } from "node:stream";
-import { fileURLToPath } from "node:url";
+import { userInfo } from "node:os";
 import { promisify } from "node:util";
 import { defineRpcContract, type BbPluginApi } from "@get-bb/plugin-sdk";
 import { z } from "zod";
-import { FONTS, FONT_IDS } from "./fonts";
+import { FAMILY_NAME, normalizeFont, type CatalogFont } from "./fonts";
 import {
-  ART,
   DEFAULT_SHADER_COLOR,
   DEFAULT_WALLPAPER,
   SHADER_COLORS,
   SHADER_COLOR_IDS,
   WALLPAPERS,
   WALLPAPER_IDS,
-  isArt,
 } from "./wallpapers";
 import { dailyTokens, type DailyTokens } from "./tokens";
 
@@ -33,12 +26,18 @@ const harnessSchema = z.object({
   name: z.string(),
   usedPercent: z.number(),
   resetsAt: z.string(),
-  /** Fresh tokens per local day, oldest first, ending today; empty if unknown. */
+  /** Tokens per local day (see tokens.ts), oldest first, ending today; empty if unknown. */
   daily: z.array(z.number()),
 });
 export type HarnessUsage = z.infer<typeof harnessSchema>;
 
+const catalogFontSchema = z.object({ family: z.string(), category: z.string() });
+
 export const rpcContract = defineRpcContract({
+  font_catalog: {
+    input: z.null(),
+    output: z.object({ fonts: z.array(catalogFontSchema) }),
+  },
   weekly_usage: {
     input: z.null(),
     output: z.object({ harnesses: z.array(harnessSchema), observedAt: z.number() }),
@@ -70,54 +69,40 @@ const preferencesSchema = z.object({
   agentActivity: z.boolean(),
   composerGlow: z.boolean(),
   homeGreeting: z.boolean(),
-  railDither: z.boolean(),
+  railPattern: z.boolean(),
   animateShader: z.boolean(),
   shaderColor: z.enum(SHADER_COLOR_IDS),
   /** Text size as a percent of bb's default type scale. */
   fontScale: z.number().int().min(85).max(140),
-  /** UI font; "theme" keeps the active theme's own. */
-  font: z.enum(FONT_IDS),
+  /** UI font: "theme", "inter", or "google:<Family>"; see fonts.ts. */
+  font: z.string().transform(normalizeFont),
   wallpaper: z.enum(WALLPAPER_IDS),
-  customWallpaper: z.string().max(2048),
 });
 export type Preferences = z.infer<typeof preferencesSchema>;
 
-const IMAGE_TYPES: Record<string, string> = {
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".png": "image/png",
-  ".webp": "image/webp",
-  ".gif": "image/gif",
-  ".avif": "image/avif",
-};
+/** Google's public catalog of font families, as the fonts.google.com site loads it. */
+const CATALOG_URL = "https://fonts.google.com/metadata/fonts";
+const catalogSchema = z.object({
+  familyMetadataList: z.array(z.object({ family: z.string(), category: z.string(), popularity: z.number() })),
+});
 
-/** The plugin's assets directory, whether running from server.ts or dist/server.js. */
-function assetsDir(): string {
-  const here = dirname(fileURLToPath(import.meta.url));
-  const beside = join(here, "assets");
-  return existsSync(beside) ? beside : join(here, "..", "assets");
-}
+let catalog: Promise<CatalogFont[]> | null = null;
 
-/** A custom wallpaper value that names a local file, as an absolute path; else null. */
-function localPath(value: string): string | null {
-  const v = value.trim();
-  if (v.startsWith("~/")) return resolve(homedir(), v.slice(2));
-  return v.startsWith("/") ? resolve(v) : null;
-}
-
-async function serveImage(path: string): Promise<Response> {
-  const type = IMAGE_TYPES[extname(path).toLowerCase()];
-  if (!type) return new Response(`Not an image file: ${path}`, { status: 415 });
-  try {
-    const info = await stat(path);
-    if (!info.isFile()) throw new Error("not a file");
-    const body = Readable.toWeb(createReadStream(path)) as ReadableStream;
-    return new Response(body, {
-      headers: { "content-type": type, "content-length": String(info.size), "cache-control": "no-cache" },
-    });
-  } catch {
-    return new Response(`Wallpaper file not found: ${path}`, { status: 404 });
-  }
+/** Every Google Fonts family, most popular first. Fetched once; a failed fetch is retried on the next call. */
+function fontCatalog(): Promise<CatalogFont[]> {
+  catalog ??= (async () => {
+    const res = await fetch(CATALOG_URL, { signal: AbortSignal.timeout(15_000) });
+    if (!res.ok) throw new Error(`Google Fonts catalog returned ${res.status}`);
+    const { familyMetadataList } = catalogSchema.parse(await res.json());
+    return familyMetadataList
+      .filter((f) => FAMILY_NAME.test(f.family))
+      .sort((a, b) => a.popularity - b.popularity)
+      .map(({ family, category }) => ({ family, category }));
+  })().catch((error) => {
+    catalog = null;
+    throw error;
+  });
+  return catalog;
 }
 
 export default async function plugin(bb: BbPluginApi) {
@@ -146,10 +131,10 @@ export default async function plugin(bb: BbPluginApi) {
       description: "A thin accent border on the message box while you type.",
       default: false,
     },
-    railDither: {
+    railPattern: {
       type: "boolean",
-      label: "Rail dither",
-      description: "The Dither pattern rising from the bottom of the navigation rail, in the wallpaper color.",
+      label: "Rail pattern",
+      description: "The home wallpaper's pattern rising from the bottom of the navigation rail, in the wallpaper color.",
       default: true,
     },
     homeGreeting: {
@@ -161,27 +146,26 @@ export default async function plugin(bb: BbPluginApi) {
     fontScale: {
       type: "number",
       label: "Text size",
-      description: "Text size across bb, as a percent of bb's default (85 to 140). Spacing stays the same.",
-      default: 107,
+      description: "Text size across bb, as a percent of the active theme's own sizes (85 to 140). Spacing stays the same.",
+      default: 100,
     },
     font: {
-      type: "select",
+      type: "string",
       label: "Font",
-      description: "The font for bb's interface text. Code and the terminal keep their monospace font.",
-      options: [...FONT_IDS],
-      experimental_optionLabels: Object.fromEntries(FONTS.map((f) => [f.id, f.name])),
+      description:
+        'The font for bb\'s interface text: "theme", "inter", or "google:" plus any Google Fonts family, such as "google:Geist". Code and the terminal keep their monospace font.',
       default: "theme",
     },
     animateShader: {
       type: "boolean",
       label: "Animate wallpaper",
-      description: "Let the Dither and Glow wallpapers drift slowly. Reduced motion keeps them still either way.",
+      description: "Let the wallpaper and the rail dither move slowly. Reduced motion keeps them still either way.",
       default: true,
     },
     shaderColor: {
       type: "select",
       label: "Wallpaper color",
-      description: "The color of the Dither and Glow wallpapers.",
+      description: "The color of the wallpaper and the rail dither.",
       options: [...SHADER_COLOR_IDS],
       experimental_optionLabels: Object.fromEntries(SHADER_COLORS.map((c) => [c.id, c.label])),
       default: DEFAULT_SHADER_COLOR,
@@ -189,35 +173,15 @@ export default async function plugin(bb: BbPluginApi) {
     wallpaper: {
       type: "select",
       label: "Home wallpaper",
-      description: "Art behind the home screen (the new-thread page, also opened with Cmd+N).",
+      description: "The animated effect behind the home screen (the new-thread page, also opened with Cmd+N).",
       options: [...WALLPAPER_IDS],
       experimental_optionLabels: Object.fromEntries(WALLPAPERS.map((w) => [w.id, w.label])),
       default: DEFAULT_WALLPAPER,
-    },
-    customWallpaper: {
-      type: "string",
-      label: "Custom wallpaper image",
-      description: "Used when Home wallpaper is Custom image: an image URL, or a file path such as ~/Pictures/wallpaper.jpg.",
-      default: "",
     },
   });
 
   const readPreferences = async (): Promise<Preferences> => preferencesSchema.parse(await settings.get());
   settings.onChange(() => bb.realtime.publish(SETTINGS_CHANGED, null));
-
-  // Serves the selected wallpaper: a bundled one, or a custom local file.
-  // Custom URLs load directly in the browser and never reach this route.
-  bb.http.route("GET", "/wallpaper", async () => {
-    const { wallpaper, customWallpaper } = await readPreferences();
-    if (isArt(wallpaper)) return serveImage(join(assetsDir(), "wallpapers", `${wallpaper}.jpg`));
-    const path = wallpaper === "custom" ? localPath(customWallpaper) : null;
-    return path ? serveImage(path) : new Response("No wallpaper file is set", { status: 404 });
-  });
-
-  // Thumbnails for the settings page's wallpaper picker.
-  for (const { id } of ART) {
-    bb.http.route("GET", `/wallpapers/${id}`, () => serveImage(join(assetsDir(), "wallpapers", `${id}.jpg`)));
-  }
 
   // First name for the home greeting: git's user.name, else the account name.
   const firstName = (async () => {
@@ -261,6 +225,7 @@ export default async function plugin(bb: BbPluginApi) {
       const tokensToday = Object.values(daily).reduce((sum, days) => sum + (days.at(-1) ?? 0), 0);
       return { name: await firstName, tokensToday };
     },
+    font_catalog: async () => ({ fonts: await fontCatalog() }),
     settings_get: readPreferences,
     settings_set: async (changes) => {
       await settings.experimental_set(changes);
