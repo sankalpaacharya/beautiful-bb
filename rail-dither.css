@@ -1,0 +1,15 @@
+/* The rail is positioned with a z-index, so a layer at -1 inside it paints
+   above the rail's own background and below its buttons. */
+.bbb-rail-dither {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bbb-rail-dither-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

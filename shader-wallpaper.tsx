@@ -1,14 +1,23 @@
-// Shader wallpaper: a WebGL field along the top of the home pane, drawn as
-// Dither (small squares through a Bayer matrix) or Glow (a soft glow under a
-// faint grain). Both thin out in the middle and fade before the composer.
+// Shader wallpaper: a slowly drifting WebGL field drawn as Dither (small
+// squares through a Bayer matrix) or Glow (a soft glow under a faint grain),
+// fading out from one edge of its container.
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { experimental_useCodeTheme as useCodeTheme } from "@get-bb/plugin-sdk/app";
-import { createShaderRenderer, type Rgb, type ShaderRenderer, type ShaderStyle } from "./shader-renderer";
+import {
+  createShaderRenderer,
+  type Rgb,
+  type ShaderLayout,
+  type ShaderRenderer,
+  type ShaderStyle,
+} from "./shader-renderer";
 
 const FRAME_MS = 1000 / 30;
 
 /** Dot pitch in CSS pixels. */
-const CELL: Record<ShaderStyle, number> = { dither: 4, glow: 5 };
+const CELL: Record<ShaderStyle, number> = { dither: 2, glow: 5 };
+
+/** The home pane: from the top, thin in the middle behind the composer. */
+export const HOME_LAYOUT: ShaderLayout = { anchor: "top", sides: true, reach: 1, edgeFade: 0 };
 
 const TONES = {
   dark: { alpha: 0.42, ink: [1, 1, 1], inkAlpha: 0.16 },
@@ -41,15 +50,18 @@ export function ShaderWallpaper({
   style,
   color,
   animate,
+  layout = HOME_LAYOUT,
   scale = 1,
   className,
 }: {
   style: ShaderStyle;
   color: string;
   animate: boolean;
+  layout?: ShaderLayout;
   scale?: number;
   className?: string;
 }) {
+  const { anchor, sides, reach, edgeFade } = layout;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [renderer, setRenderer] = useState<ShaderRenderer | null>(null);
   const [unsupported, setUnsupported] = useState(false);
@@ -60,7 +72,7 @@ export function ShaderWallpaper({
 
   useEffect(() => {
     const canvas = canvasRef.current!;
-    const next = createShaderRenderer(canvas, style, CELL[style] * scale);
+    const next = createShaderRenderer(canvas, style, CELL[style] * scale, { anchor, sides, reach, edgeFade });
     if (!next) {
       setUnsupported(true);
       return;
@@ -74,7 +86,7 @@ export function ShaderWallpaper({
       next.dispose();
       setRenderer(null);
     };
-  }, [style, scale]);
+  }, [style, scale, anchor, sides, reach, edgeFade]);
 
   // `name` changes with the palette, which can change what `color` resolves to.
   useEffect(() => {
