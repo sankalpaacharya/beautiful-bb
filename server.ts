@@ -70,6 +70,7 @@ const preferencesSchema = z.object({
   agentActivity: z.boolean(),
   composerGlow: z.boolean(),
   homeGreeting: z.boolean(),
+  railDither: z.boolean(),
   animateShader: z.boolean(),
   shaderColor: z.enum(SHADER_COLOR_IDS),
   /** Text size as a percent of bb's default type scale. */
@@ -144,6 +145,12 @@ export default async function plugin(bb: BbPluginApi) {
       label: "Composer accent",
       description: "A thin accent border on the message box while you type.",
       default: false,
+    },
+    railDither: {
+      type: "boolean",
+      label: "Rail dither",
+      description: "The Dither pattern rising from the bottom of the navigation rail, in the wallpaper color.",
+      default: true,
     },
     homeGreeting: {
       type: "boolean",

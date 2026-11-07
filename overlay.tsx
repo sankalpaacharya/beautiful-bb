@@ -7,6 +7,8 @@ import { experimental_useSidebarThreads as useSidebarThreads, useSdk } from "@ge
 import { usePreferences } from "./use-preferences";
 import { applyFeatures, rowStatus } from "./features";
 import { shareSdk } from "./actions";
+import { RailDither } from "./rail-dither";
+import { SHADER_COLOR_CSS } from "./wallpapers";
 import "./effects.css";
 
 const BUSY = new Set(["starting", "active", "stopping"]);
@@ -85,5 +87,11 @@ export function EffectsOverlay() {
   useEffect(() => {
     if (prefs) applyFeatures(prefs);
   }, [prefs]);
-  return prefs?.agentActivity ? <AgentActivity /> : null;
+  if (!prefs) return null;
+  return (
+    <>
+      {prefs.agentActivity && <AgentActivity />}
+      {prefs.railDither && <RailDither color={SHADER_COLOR_CSS[prefs.shaderColor]} animate={prefs.animateShader} />}
+    </>
+  );
 }

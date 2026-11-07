@@ -17,6 +17,7 @@ rail. Changes apply right away. The same settings are also available with
 | Focus mode | Hides the sidebar and dims chrome; Cmd+Shift+F | Off |
 | Home greeting | Hello, today's tokens, and the last finished thread on the home screen | On |
 | Home wallpaper | None, Dither, Glow, one of six built-in pieces, or Custom image | Dither |
+| Rail dither | The Dither pattern rising from the bottom of the navigation rail | On |
 | Wallpaper color | Teal, Indigo, Amber, Rose, Theme accent, or Neutral, for Dither and Glow | Indigo |
 | Animate wallpaper | Dither and Glow drift slowly; reduced motion keeps them still | On |
 | Custom wallpaper image | Image URL or file path, used with Custom image | Empty |

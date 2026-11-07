@@ -286,11 +286,16 @@ export function SettingsPage() {
             detail="A hello with today's token count and the thread that finished last."
             control={<Switch label="Home greeting" checked={prefs.homeGreeting} onChange={(v) => update({ homeGreeting: v })} />}
           />
-          {isShader(prefs.wallpaper) && (
+          <Row
+            title="Rail dither"
+            detail="The Dither pattern rising from the bottom of the navigation rail."
+            control={<Switch label="Rail dither" checked={prefs.railDither} onChange={(v) => update({ railDither: v })} />}
+          />
+          {(isShader(prefs.wallpaper) || prefs.railDither) && (
             <>
               <Row
                 title="Color"
-                detail="Theme accent and Neutral follow the active theme."
+                detail="For Dither, Glow, and the rail. Theme accent and Neutral follow the active theme."
                 control={
                   <div className="bbs-swatches" role="radiogroup" aria-label="Wallpaper color">
                     {SHADER_COLORS.map((c) => (
