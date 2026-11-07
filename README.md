@@ -8,6 +8,7 @@ rail. Changes apply right away. The same settings are also available with
 | Setting | What it does | Default |
 | --- | --- | --- |
 | Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
+| Font | Theme default, Inter, Geist, IBM Plex Sans, or Shippori Mincho for interface text; web fonts load from Google Fonts | Theme default |
 | Text size | Slider from 85% to 140% that resizes text everywhere, in every theme | 107% |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
 | Agent activity | A wave on working threads in the sidebar, sparkles when one finishes | On |
@@ -15,10 +16,10 @@ rail. Changes apply right away. The same settings are also available with
 | Composer accent | Thin accent border on the message box while typing | Off |
 | Focus mode | Hides the sidebar and dims chrome; Cmd+Shift+F | Off |
 | Home greeting | Hello, today's tokens, and the last finished thread on the home screen | On |
-| Living wallpaper | The ASCII wallpaper flickers gently | On |
-| Home wallpaper | None, one of six built-in pieces, or Custom image | None |
+| Home wallpaper | None, Dither, Glow, one of six built-in pieces, or Custom image | Dither |
+| Wallpaper color | Teal, Indigo, Amber, Rose, Theme accent, or Neutral, for Dither and Glow | Indigo |
+| Animate wallpaper | Dither and Glow drift slowly; reduced motion keeps them still | On |
 | Custom wallpaper image | Image URL or file path, used with Custom image | Empty |
-| Wallpaper style | Colorful ASCII, ASCII, or Photo | Colorful ASCII |
 
 Command menu (Cmd+Shift+P): **Beautiful bb: Toggle focus mode**, **Next wallpaper**, **Next theme**.
 
@@ -49,8 +50,6 @@ The look of [T3 Code](https://github.com/pingdotgg/t3code) in bb:
 - T3 Code's zinc light palette and near-black dark palette with an indigo accent
 - System UI font and SF Mono, matching T3 Code
 - Text one step larger across the app
-- A starry night-sky banner at the top of the sidebar (dark mode), tinted
-  with T3 Code's violet and built on the Hubble eXtreme Deep Field
 - Indigo text selection and cursor, slim scrollbars
 
 ## Weekly usage card
@@ -76,9 +75,14 @@ run `node scripts/build-wave-spinner.mjs`.
 
 ## Home wallpaper
 
-The home screen (the new-thread page, also opened with Cmd+N) can show art
-behind the composer, redrawn as an ASCII texture in the style of a terminal
-printout. Colorful ASCII keeps each character tinted with the image's colors.
+The home screen (the new-thread page, also opened with Cmd+N) shows a slowly
+drifting WebGL pattern along the top of the pane by default, dense at the left
+and right edges and thin in the middle. Dither draws it as small squares
+through an 8x8 Bayer matrix, after React Bits'
+[Dither](https://reactbits.dev/backgrounds/dither) background; Glow draws it
+as a soft glow under a faint halftone grain. Both fade out before the composer,
+and without WebGL the home screen simply shows no wallpaper. Pick an image
+instead to show it as a faded photo.
 Six original anime pieces ship with the plugin, made for it with GPT-6-Astra:
 headphones girl, late-night coder, astronaut capybara, sleeping kitsune,
 samurai, and robot buddy. Choose Custom image to use your own.
@@ -103,11 +107,10 @@ bb plugin install .
 Edit `themes/*.src.css`, then:
 
 ```sh
-node scripts/build-themes.mjs   # inlines assets/space-banner.jpg into themes/*.css
+node scripts/build-themes.mjs   # writes themes/*.css
 bb plugin reload beautiful-bb
 ```
 
 ## Credits
 
-Sidebar banner: Hubble eXtreme Deep Field, NASA, ESA (public domain).
 Palette ported from T3 Code (MIT).

@@ -14,7 +14,7 @@ The plugin contributes app themes through `bb.themes` in its `package.json`.
 ## Editing a theme
 
 Edit `themes/<name>.src.css`, never the generated `themes/<name>.css`. Then run
-`node scripts/build-themes.mjs` to inline `assets/space-banner.jpg` and
+`node scripts/build-themes.mjs` to write it and
 `bb plugin reload beautiful-bb` to apply. The build fails if a theme exceeds
 bb's 256 KB stylesheet limit.
 
