@@ -1,7 +1,7 @@
 // Daily token totals for the last 7 days, read from the harnesses' own local
-// session logs so usage outside bb counts too. "Tokens" here are fresh tokens:
-// input, output, and cache writes, without cache reads, which would dwarf the
-// rest and track context length rather than work done.
+// session logs so usage outside bb counts too. "Tokens" are every token the
+// models processed, counted the way ccusage and the providers' usage pages
+// count them: input, output, cache writes, and cache reads.
 import { createReadStream } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
 import { homedir } from "node:os";
@@ -68,7 +68,11 @@ async function claudeDaily(starts: number[]): Promise<DailyTokens> {
       seen.add(key);
       const i = dayIndex(starts, t);
       if (i < 0) return;
-      days[i]! += (usage.input_tokens ?? 0) + (usage.cache_creation_input_tokens ?? 0) + (usage.output_tokens ?? 0);
+      days[i]! +=
+        (usage.input_tokens ?? 0) +
+        (usage.output_tokens ?? 0) +
+        (usage.cache_creation_input_tokens ?? 0) +
+        (usage.cache_read_input_tokens ?? 0);
     });
   }
   return days;
@@ -84,9 +88,10 @@ async function codexDaily(starts: number[]): Promise<DailyTokens> {
       const total = r?.payload?.info?.total_token_usage;
       const t = Date.parse(r?.timestamp);
       if (!total || Number.isNaN(t)) return;
-      const fresh = (total.input_tokens ?? 0) - (total.cached_input_tokens ?? 0) + (total.output_tokens ?? 0);
-      const delta = fresh - previous;
-      previous = fresh;
+      // Codex's input already includes its cached input.
+      const all = total.total_tokens ?? (total.input_tokens ?? 0) + (total.output_tokens ?? 0);
+      const delta = all - previous;
+      previous = all;
       const i = dayIndex(starts, t);
       if (delta > 0 && i >= 0) days[i]! += delta;
     });

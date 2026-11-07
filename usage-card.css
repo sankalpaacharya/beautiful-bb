@@ -9,16 +9,12 @@ li[data-footer-item="plugin:beautiful-bb/weekly-usage"] {
 }
 
 .bbb-card {
-  --bbb-tint: var(--bbb-accent, oklch(0.55 0.17 295));
+  --bbb-tint: var(--bbb-accent, var(--primary));
   --bbb-track: color-mix(in oklch, var(--ink, currentColor) 10%, transparent);
   padding: 0.375rem 0.625rem;
   color: var(--sidebar-foreground, var(--foreground));
   opacity: 0.4;
   transition: opacity 200ms ease;
-}
-
-.dark .bbb-card {
-  --bbb-tint: var(--bbb-accent, oklch(0.78 0.11 295));
 }
 
 .bbb-card:hover,

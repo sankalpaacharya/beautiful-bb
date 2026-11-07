@@ -19,7 +19,7 @@ import { SettingsPage } from "./settings-page";
 import { EffectsOverlay } from "./overlay";
 import { HomeGreeting } from "./greeting";
 import { WaveIcon } from "./wave-icon";
-import { nextTheme, nextWallpaper } from "./actions";
+import { nextTheme } from "./actions";
 
 const REFRESH_MS = 2 * 60 * 1000;
 const HOUR_MS = 60 * 60 * 1000;
@@ -38,7 +38,7 @@ function until(ms: number): string {
 const tokenCount = new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 });
 const weekday = new Intl.DateTimeFormat(undefined, { weekday: "short" });
 
-/** Seven bars of fresh tokens per day, today on the right. */
+/** Seven bars of tokens per day, today on the right. */
 function TokenBars({ daily, now }: { daily: number[]; now: number }) {
   const peak = Math.max(...daily, 1);
   const total = daily.reduce((sum, n) => sum + n, 0);
@@ -172,6 +172,5 @@ export default definePluginApp((app) => {
       toggleFocusMode();
     },
   });
-  app.commands.register({ id: "next-wallpaper", title: "Beautiful bb: Next wallpaper", run: nextWallpaper });
   app.commands.register({ id: "next-theme", title: "Beautiful bb: Next theme", run: nextTheme });
 });

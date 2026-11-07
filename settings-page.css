@@ -1,135 +1,163 @@
-/* Beautiful bb settings page. Theme tokens throughout, with the plugin's
-   lavender accent for switches and the selected wallpaper. */
+/* Beautiful bb settings page. Mirrors bb's own settings pages: a 728px
+   column of titled groups, each a bordered card of rows. The plugin accent
+   marks only selection and focus. */
 
 .bbs-page {
-  --bbs-accent: var(--bbb-accent, oklch(0.55 0.17 295));
-  --bbs-line: color-mix(in oklch, var(--ink, currentColor) 10%, transparent);
-  /* The nav panel doesn't scroll, so the page does. Side padding centers a
-     41rem column while keeping the scrollbar at the panel edge. */
+  --bbs-accent: var(--bbb-accent, var(--primary));
+  --bbs-ring: var(--ring, var(--bbs-accent));
+  --bbs-hover: color-mix(in oklch, var(--foreground) 7%, transparent);
+  /* The nav panel doesn't scroll, so the page does. Side padding centers the
+     column while keeping the scrollbar at the panel edge. */
   box-sizing: border-box;
   height: 100%;
   overflow-y: auto;
-  padding: 2.5rem max(1.5rem, calc((100% - 41rem) / 2)) 4rem;
+  padding: 2rem max(1.25rem, calc((100% - 45.5rem) / 2)) 4rem;
+  container-type: inline-size;
   color: var(--foreground);
-}
-.dark .bbs-page {
-  --bbs-accent: var(--bbb-accent, oklch(0.72 0.13 295));
-}
-
-.bbs-header h1 {
-  margin: 0;
-  font-size: var(--text-xl, 1.25rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.bbs-header p,
-.bbs-section-detail {
-  margin: 0.25rem 0 0;
-  font-size: var(--text-sm, 0.8125rem);
-  color: var(--muted-foreground);
 }
 
 .bbs-error {
-  margin: 1rem 0 0;
+  margin: 0 0 1.5rem;
   font-size: var(--text-sm, 0.8125rem);
   color: var(--destructive-text, var(--destructive));
 }
 
-.bbs-section {
-  margin-top: 2rem;
+.bbs-group + .bbs-group {
+  margin-top: 1.5rem;
 }
-.bbs-section h2 {
-  margin: 0;
+.bbs-group h2 {
+  margin: 0 0 0.75rem;
   font-size: var(--text-sm, 0.8125rem);
   font-weight: 600;
+  line-height: 1.375rem;
 }
-.bbs-section > h2 {
-  margin-bottom: 0.625rem;
-}
-.bbs-list {
-  border: 1px solid var(--bbs-line);
+.bbs-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border);
   border-radius: var(--radius, 0.625rem);
+  background: var(--card);
 }
 
-.bbs-row {
+.bbs-row-head {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 0.875rem 1rem;
-}
-.bbs-row + .bbs-row {
-  border-top: 1px solid var(--bbs-line);
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
 }
 .bbs-row-text {
-  flex: 1;
   min-width: 0;
 }
 .bbs-row-title {
   margin: 0;
   font-size: var(--text-sm, 0.8125rem);
-  font-weight: 500;
+  line-height: 1.375rem;
 }
 .bbs-row-detail {
   margin: 0.125rem 0 0;
   font-size: var(--text-xs, 0.75rem);
-  line-height: 1.125rem;
+  line-height: 1.375;
   color: var(--muted-foreground);
 }
-
-/* Switch */
-.bbs-switch {
-  position: relative;
+/* Small controls center on the title line; taller ones top-align with it. */
+.bbs-row-control {
+  display: flex;
   flex-shrink: 0;
-  width: 2.25rem;
-  height: 1.25rem;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: color-mix(in oklch, var(--ink, currentColor) 18%, transparent);
-  cursor: pointer;
-  transition: background-color 160ms ease;
+  align-items: center;
+  min-height: 1.375rem;
 }
-.bbs-switch span {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  background: var(--background, #fff);
-  box-shadow: 0 1px 2px rgb(0 0 0 / 25%);
-  transition: transform 160ms ease;
-}
-.bbs-switch[aria-checked="true"] {
-  background: var(--bbs-accent);
-}
-.bbs-switch[aria-checked="true"] span {
-  transform: translateX(1rem);
-}
-.bbs-switch:focus-visible,
-.bbs-tile:focus-visible,
-.bbs-custom :focus-visible {
-  outline: 2px solid var(--bbs-accent);
-  outline-offset: 2px;
-}
-
-/* Wallpaper picker */
-.bbs-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.875rem;
-}
-@media (max-width: 40rem) {
-  .bbs-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@container (max-width: 36rem) {
+  .bbs-row-head:not(:has(.bbs-switch)) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.625rem;
+  }
+  .bbs-row-head:not(:has(.bbs-switch)) .bbs-row-control > * {
+    flex: 1;
   }
 }
 
-.bbs-tile {
+/* Switch, drawn like bb's own. */
+.bbs-switch {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  width: 1.75rem;
+  height: 1rem;
+  padding: 0 1px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--input);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.bbs-switch span {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: var(--foreground);
+  transition: transform 150ms ease;
+}
+.bbs-switch[aria-checked="true"] {
+  background: var(--foreground);
+}
+.bbs-switch[aria-checked="true"] span {
+  background: var(--background);
+  transform: translateX(0.75rem);
+}
+
+.bbs-switch:focus-visible,
+.bbs-button:focus-visible,
+.bbs-swatches button:focus-visible,
+.bbs-fontselect-trigger:focus-visible {
+  outline: 2px solid var(--bbs-ring);
+  outline-offset: 2px;
+}
+/* Neutral, so a focused preview never reads as the selected one. */
+.bbs-option:focus-visible {
+  outline: none;
+}
+.bbs-option:focus-visible .bbs-art {
+  outline: 2px solid color-mix(in oklch, var(--foreground) 70%, transparent);
+  outline-offset: 2px;
+}
+
+.bbs-button {
+  height: 1.75rem;
+  padding: 0 0.625rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 500;
+  cursor: pointer;
+}
+.bbs-button:hover:not(:disabled) {
+  background: var(--bbs-hover);
+}
+.bbs-button:disabled {
+  cursor: default;
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* Theme and wallpaper pickers: a grid of previews, the chosen one ringed and checked. */
+.bbs-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 1rem 0.75rem;
+  margin-top: 0.875rem;
+}
+.bbs-option {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.5rem;
+  min-width: 0;
   padding: 0;
   border: 0;
   background: none;
@@ -138,243 +166,177 @@
   text-align: left;
   cursor: pointer;
 }
-.bbs-tile-art {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 16 / 9;
+.bbs-art {
+  display: block;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 0.5rem;
-  background: color-mix(in oklch, var(--ink, currentColor) 5%, transparent);
-  box-shadow: inset 0 0 0 1px var(--bbs-line);
-  transition: box-shadow 140ms ease;
+  box-shadow: 0 0 0 1px var(--border);
+  transition: box-shadow 150ms ease;
 }
-/* Previews sit on the app background, like the home screen. */
-.bbs-tile-art:not([data-kind]) {
+.bbs-option:hover .bbs-art {
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--foreground) 25%, transparent);
+}
+.bbs-option[aria-checked="true"] .bbs-art {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 3.5px var(--bbs-accent);
+}
+.bbs-option[aria-checked="true"]:focus-visible .bbs-art {
+  outline-offset: 4px;
+}
+.bbs-option-label {
+  overflow: hidden;
+  font-size: var(--text-xs, 0.75rem);
+  line-height: 1rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bbs-option[aria-checked="true"] .bbs-option-label {
+  color: var(--foreground);
+}
+.bbs-check {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  display: none;
+  width: 1rem;
+  height: 1rem;
+  padding: 0.1875rem;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--bbs-accent);
+  color: var(--background);
+}
+.bbs-option[aria-checked="true"] .bbs-check {
+  display: block;
+}
+
+/* A theme's preview: bb's sidebar, a few lines of text and code, and the
+   composer, in the theme's background and accents. */
+.bbs-theme-art {
+  display: flex;
+  background: var(--t-bg);
+}
+.bbs-theme-art i {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--t-bg), #fff 22%);
+}
+.bbs-mock-side {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 30%;
+  padding: 12% 6%;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--t-bg), #fff 4%);
+}
+.bbs-mock-side i {
+  width: 85%;
+  background: color-mix(in srgb, var(--t-bg), #fff 14%);
+}
+.bbs-mock-side i[data-on] {
+  background: var(--t-accent);
+}
+.bbs-mock-pane {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12% 9% 8%;
+}
+.bbs-mock-pane > i {
+  width: 75%;
+}
+.bbs-mock-pane > i[data-short] {
+  width: 50%;
+}
+.bbs-mock-code {
+  display: flex;
+  gap: 3px;
+}
+.bbs-mock-code i:first-child {
+  width: 32%;
+  background: var(--t-code1);
+}
+.bbs-mock-code i:last-child {
+  width: 22%;
+  background: var(--t-code2);
+}
+.bbs-mock-composer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 26%;
+  margin-top: auto;
+  padding: 0 4px;
+  border: 1px solid color-mix(in srgb, var(--t-bg), #fff 12%);
+  border-radius: 4px;
+}
+.bbs-theme-art .bbs-mock-composer i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--t-accent);
+}
+
+/* Wallpaper previews sit on the app background, like the home screen. */
+.bbs-tile-art {
   background: var(--background);
 }
-.bbs-preview-shader,
-.bbs-preview-photo {
-  width: 100%;
-  height: 100%;
+.bbs-tile-art[data-kind="none"] {
+  background: none;
+  box-shadow: none;
+  border: 1px dashed color-mix(in oklch, var(--foreground) 18%, transparent);
+  box-sizing: border-box;
+}
+.bbs-option:hover .bbs-tile-art[data-kind="none"] {
+  box-shadow: none;
+  border-color: color-mix(in oklch, var(--foreground) 32%, transparent);
+}
+.bbs-option[aria-checked="true"] .bbs-tile-art[data-kind="none"] {
+  border-color: transparent;
 }
 .bbs-preview-shader {
   display: block;
+  width: 100%;
+  height: 100%;
 }
 
 /* Wallpaper color swatches; each button's `color` is its color. */
 .bbs-swatches {
   display: flex;
-  gap: 0.375rem;
+  gap: 0.5rem;
 }
 .bbs-swatches button {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 1.125rem;
+  height: 1.125rem;
   padding: 0;
-  border: 1px solid var(--bbs-line);
+  border: 1px solid var(--border);
   border-radius: 999px;
   background: currentColor;
   cursor: pointer;
 }
 .bbs-swatches button[aria-checked="true"] {
-  box-shadow: 0 0 0 2px var(--background), 0 0 0 3.5px currentColor;
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 3.5px currentColor;
 }
 .bbs-swatches button:focus-visible {
-  outline: 2px solid var(--bbs-accent);
-  outline-offset: 3px;
-}
-.bbs-preview-photo {
-  object-fit: cover;
-  opacity: 0.35;
-}
-.bbs-tile-art[data-kind] {
-  box-shadow: inset 0 0 0 1px var(--bbs-line);
-  background: none;
-  border: 1px dashed color-mix(in oklch, var(--ink, currentColor) 20%, transparent);
-}
-.bbs-tile-art[data-kind] span {
-  font-size: var(--text-xs, 0.75rem);
-  color: var(--muted-foreground);
-}
-.bbs-tile:hover .bbs-tile-art {
-  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--ink, currentColor) 30%, transparent);
-}
-.bbs-tile[aria-checked="true"] .bbs-tile-art {
-  box-shadow: 0 0 0 2px var(--bbs-accent);
-}
-.bbs-tile-label {
-  font-size: var(--text-xs, 0.75rem);
-  color: var(--muted-foreground);
-}
-.bbs-tile[aria-checked="true"] .bbs-tile-label {
-  color: var(--foreground);
+  outline-offset: 4px;
 }
 
-.bbs-custom {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.875rem;
-}
-.bbs-custom input {
-  flex: 1;
-  min-width: 0;
-  padding: 0.4375rem 0.625rem;
-  border: 1px solid var(--input, var(--bbs-line));
-  border-radius: 0.5rem;
-  background: transparent;
-  color: var(--foreground);
-  font: inherit;
-  font-size: var(--text-sm, 0.8125rem);
-}
-.bbs-custom button {
-  padding: 0.4375rem 0.875rem;
-  border: 0;
-  border-radius: 0.5rem;
-  background: var(--bbs-accent);
-  color: #fff;
-  font: inherit;
-  font-size: var(--text-sm, 0.8125rem);
-  font-weight: 500;
-  cursor: pointer;
-}
-.bbs-custom button:disabled {
-  cursor: default;
-  opacity: 0.45;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bbs-switch,
-  .bbs-switch span,
-  .bbs-tile-art {
-    transition: none;
-  }
-}
-
-/* Theme picker */
-.bbs-themes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
-  gap: 0.625rem;
-}
-.bbs-theme {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem 0.5rem 0.75rem;
-  border: 1px solid var(--bbs-line);
-  border-radius: var(--radius, 0.625rem);
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 140ms ease;
-}
-.bbs-theme:hover {
-  border-color: color-mix(in oklch, var(--ink, currentColor) 25%, transparent);
-}
-.bbs-theme[aria-checked="true"] {
-  border-color: var(--swatch);
-  box-shadow: 0 0 0 1px var(--swatch);
-}
-.bbs-theme:focus-visible {
-  outline: 2px solid var(--bbs-accent);
-  outline-offset: 2px;
-}
-/* A tiny preview in the theme's own background and accents. */
-.bbs-theme-preview {
-  display: flex;
-  align-items: flex-end;
-  gap: 0.3125rem;
-  height: 2.75rem;
-  margin-bottom: 0.25rem;
-  padding: 0.5rem;
-  border-radius: calc(var(--radius, 0.625rem) - 0.25rem);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 6%);
-}
-.bbs-theme-preview span {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 50%;
-}
-.bbs-theme-preview span:first-child {
-  width: 1.75rem;
-  border-radius: 999px;
-}
-.bbs-theme-name {
-  padding: 0 0.25rem;
-  font-size: var(--text-sm, 0.8125rem);
-  font-weight: 500;
-}
-.bbs-theme-detail {
-  padding: 0 0.25rem;
-  font-size: var(--text-xs, 0.75rem);
-  line-height: 1.125rem;
-  color: var(--muted-foreground);
-}
-.bbs-section > .bbs-themes + .bbs-section-detail {
-  margin-top: 0.5rem;
-}
-.bbs-list-tight {
-  margin-top: 0.875rem;
-}
-
-/* Font picker: theme tiles, with a sample in place of the swatches. */
-.bbs-fonts {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
-  gap: 0.625rem;
-}
-.bbs-font {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.75rem 0.5rem;
-  border: 1px solid var(--bbs-line);
-  border-radius: var(--radius, 0.625rem);
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 140ms ease;
-}
-.bbs-font:hover {
-  border-color: color-mix(in oklch, var(--ink, currentColor) 25%, transparent);
-}
-.bbs-font[aria-checked="true"] {
-  border-color: var(--bbs-accent);
-  box-shadow: 0 0 0 1px var(--bbs-accent);
-}
-.bbs-font:focus-visible {
-  outline: 2px solid var(--bbs-accent);
-  outline-offset: 2px;
-}
-.bbs-font-sample {
-  padding: 0 0.25rem;
-  font-size: 1.75rem;
-  font-weight: 500;
-  line-height: 1.2;
-}
-.bbs-section > .bbs-fonts + .bbs-section-detail {
-  margin-top: 0.5rem;
-}
-
-/* Text size slider */
+/* Text size slider. */
 .bbs-textsize {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.875rem 1rem;
-}
-.bbs-textsize-sample {
-  width: 3rem;
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.02em;
-  text-align: center;
+  gap: 0.75rem;
 }
 .bbs-textsize input[type="range"] {
-  flex: 1;
+  width: 10rem;
   height: 1.25rem;
   margin: 0;
   background: transparent;
@@ -382,24 +344,28 @@
   -webkit-appearance: none;
   appearance: none;
 }
+@container (max-width: 36rem) {
+  .bbs-textsize input[type="range"] {
+    flex: 1;
+    width: auto;
+  }
+}
 .bbs-textsize input[type="range"]::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
   background: linear-gradient(
     to right,
-    var(--bbs-accent) var(--fill),
-    color-mix(in oklch, var(--ink, currentColor) 15%, transparent) var(--fill)
+    var(--foreground) var(--fill),
+    color-mix(in oklch, var(--foreground) 14%, transparent) var(--fill)
   );
 }
 .bbs-textsize input[type="range"]::-webkit-slider-thumb {
-  width: 1rem;
-  height: 1rem;
-  margin-top: -6px;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-top: -5px;
   border-radius: 50%;
-  background: var(--background, #fff);
-  box-shadow:
-    0 0 0 2px var(--bbs-accent),
-    0 1px 3px rgb(0 0 0 / 30%);
+  background: var(--foreground);
+  box-shadow: 0 0 0 2px var(--card);
   -webkit-appearance: none;
   appearance: none;
 }
@@ -408,33 +374,153 @@
 }
 .bbs-textsize input[type="range"]:focus-visible::-webkit-slider-thumb {
   box-shadow:
-    0 0 0 2px var(--bbs-accent),
-    0 0 0 5px color-mix(in oklch, var(--bbs-accent) 35%, transparent);
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--bbs-ring);
 }
 .bbs-textsize-value {
-  min-width: 2.75rem;
-  font-size: var(--text-sm, 0.8125rem);
-  font-weight: 500;
+  min-width: 2.5rem;
+  font-size: var(--text-xs, 0.75rem);
   font-variant-numeric: tabular-nums;
   text-align: right;
-}
-.bbs-textsize button {
-  padding: 0.25rem 0.625rem;
-  border: 1px solid var(--bbs-line);
-  border-radius: 0.375rem;
-  background: none;
   color: var(--muted-foreground);
+}
+
+/* Font picker: a trigger showing the current font in itself, and a searchable list. */
+.bbs-fontselect {
+  position: relative;
+  width: 13rem;
+}
+@container (max-width: 36rem) {
+  .bbs-fontselect {
+    width: 100%;
+  }
+}
+.bbs-fontselect-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  height: 2rem;
+  padding: 0 0.625rem 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: none;
+  color: var(--foreground);
   font: inherit;
-  font-size: var(--text-xs, 0.75rem);
+  font-size: var(--text-sm, 0.8125rem);
+  text-align: left;
   cursor: pointer;
 }
-.bbs-textsize button:hover:not(:disabled) {
+.bbs-fontselect-trigger > span:first-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bbs-fontselect-trigger:hover,
+.bbs-fontselect-trigger[aria-expanded="true"] {
+  background: var(--bbs-hover);
+}
+.bbs-fontselect-chevron {
+  flex-shrink: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-right: 1.5px solid var(--muted-foreground);
+  border-bottom: 1.5px solid var(--muted-foreground);
+  transform: translateY(-2px) rotate(45deg);
+}
+.bbs-fontselect-popover {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  width: max(100%, 18rem);
+  max-width: calc(100cqw - 2.5rem);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius, 0.625rem);
+  background: var(--popover, var(--background));
+  box-shadow: 0 10px 30px rgb(0 0 0 / 22%);
+}
+.bbs-fontselect-search {
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+  background: transparent;
   color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-sm, 0.8125rem);
 }
-.bbs-textsize button:disabled {
-  cursor: default;
-  opacity: 0.4;
+.bbs-fontselect-search::placeholder {
+  color: var(--muted-foreground);
 }
-.bbs-section > .bbs-list + .bbs-section-detail {
-  margin-top: 0.5rem;
+.bbs-fontselect-list {
+  max-height: 16rem;
+  margin: 0;
+  padding: 0.25rem;
+  overflow-y: auto;
+  list-style: none;
+}
+.bbs-fontselect-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: var(--text-sm, 0.8125rem);
+  line-height: 1.25rem;
+  cursor: pointer;
+}
+.bbs-fontselect-list li > span:first-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* A tick at the end of every row, visible on the chosen one, so details line up. */
+.bbs-fontselect-list li::after {
+  content: "";
+  flex-shrink: 0;
+  width: 0.3125rem;
+  height: 0.625rem;
+  margin: 0 0.1875rem 0.1875rem;
+  border-right: 1.5px solid transparent;
+  border-bottom: 1.5px solid transparent;
+  transform: rotate(45deg);
+}
+.bbs-fontselect-list li[aria-selected="true"]::after {
+  border-color: var(--bbs-accent);
+}
+.bbs-fontselect-list li[data-active] {
+  background: var(--bbs-hover);
+}
+.bbs-fontselect-detail {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--muted-foreground);
+}
+.bbs-fontselect-empty {
+  margin: 0;
+  padding: 1.5rem 0.75rem;
+  font-size: var(--text-xs, 0.75rem);
+  text-align: center;
+  color: var(--muted-foreground);
+}
+.bbs-fontselect-footer {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--muted-foreground);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bbs-switch,
+  .bbs-switch span,
+  .bbs-art {
+    transition: none;
+  }
 }

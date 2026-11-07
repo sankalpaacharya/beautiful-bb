@@ -142,23 +142,23 @@ textarea,
 
 :root,
 .light {
-  --canvas: #f2ecbc;
+  --canvas: #fbfaf6;
   --ink: #545464;
-  --card: color-mix(in srgb, #ffffff 55%, #f2ecbc);
-  --popover: color-mix(in srgb, #ffffff 65%, #f2ecbc);
-  --secondary: color-mix(in srgb, #545464 5%, #f2ecbc);
-  --muted: color-mix(in srgb, #545464 5%, #f2ecbc);
-  --accent: color-mix(in srgb, #545464 8%, #f2ecbc);
-  --border: color-mix(in srgb, #545464 14%, #f2ecbc);
-  --border-hairline: color-mix(in srgb, #545464 14%, #f2ecbc);
-  --border-seam: color-mix(in srgb, #545464 12%, #f2ecbc);
-  --input: color-mix(in srgb, #545464 22%, #f2ecbc);
-  --sidebar: #e7dba0;
+  --card: #fefef9;
+  --popover: #fffffb;
+  --secondary: #f1f0ec;
+  --muted: #f1f0ec;
+  --accent: #edede8;
+  --border: #dfded5;
+  --border-hairline: #e6e5dc;
+  --border-seam: #e9e8df;
+  --input: #d6d5cc;
+  --sidebar: #f4f4ef;
   --sidebar-foreground: #545464;
-  --sidebar-accent: color-mix(in srgb, #545464 8%, #e7dba0);
-  --sidebar-border: color-mix(in srgb, #545464 12%, #e7dba0);
-  --surface-selected: color-mix(in srgb, #545464 9%, #e7dba0);
-  --surface-selected-border: color-mix(in srgb, #545464 16%, #e7dba0);
+  --sidebar-accent: #f1f0ec;
+  --sidebar-border: #e9e8df;
+  --surface-selected: #e7e6e2;
+  --surface-selected-border: #d9d8cf;
   --muted-foreground: #766b90;
   --primary: #4d699b;
   --primary-foreground: #ffffff;
@@ -175,26 +175,26 @@ textarea,
 }
 
 .dark {
-  --canvas: #1f1f28;
+  --canvas: #0d0d11;
   --ink: #dcd7ba;
-  --card: color-mix(in srgb, #dcd7ba 4%, #1f1f28);
-  --popover: color-mix(in srgb, #dcd7ba 5%, #1f1f28);
-  --secondary: color-mix(in srgb, #dcd7ba 4%, #1f1f28);
-  --muted: color-mix(in srgb, #dcd7ba 4%, #1f1f28);
-  --accent: color-mix(in srgb, #dcd7ba 6%, #1f1f28);
-  --border: color-mix(in srgb, #dcd7ba 9%, #1f1f28);
-  --border-hairline: color-mix(in srgb, #dcd7ba 9%, #1f1f28);
-  --border-seam: color-mix(in srgb, #dcd7ba 8%, #1f1f28);
-  --input: color-mix(in srgb, #dcd7ba 14%, #1f1f28);
-  --sidebar: #16161d;
+  --card: #121216;
+  --popover: #18181c;
+  --secondary: #131317;
+  --muted: #131317;
+  --accent: #19191d;
+  --border: #23232b;
+  --border-hairline: #1e1e26;
+  --border-seam: #1a1a21;
+  --input: #26262d;
+  --sidebar: #0a0a0d;
   --sidebar-foreground: #dcd7ba;
-  --sidebar-accent: color-mix(in srgb, #dcd7ba 6%, #16161d);
-  --sidebar-border: color-mix(in srgb, #dcd7ba 8%, #16161d);
-  --surface-selected: color-mix(in srgb, #dcd7ba 7%, #16161d);
-  --surface-selected-border: color-mix(in srgb, #dcd7ba 12%, #16161d);
+  --sidebar-accent: #131317;
+  --sidebar-border: #1a1a21;
+  --surface-selected: #16161a;
+  --surface-selected-border: #23232b;
   --muted-foreground: #938aa9;
   --primary: #7e9cd8;
-  --primary-foreground: #1f1f28;
+  --primary-foreground: #0d0d11;
   --file-accent: #7e9cd8;
   --bbb-accent: #7e9cd8;
   --destructive: #e46876;
