@@ -1,5 +1,5 @@
-// Home greeting on the new-thread screen: a time-of-day hello, today's fresh
-// token count across Claude and Codex, and the thread that finished last.
+// Home greeting on the new-thread screen: a time-of-day hello, today's token
+// count across Claude and Codex, and the thread that finished last.
 import { useEffect, useState } from "react";
 import {
   experimental_useSidebarThreads as useSidebarThreads,
