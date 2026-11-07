@@ -4,9 +4,9 @@
 import type { PluginBrowserBbSdk } from "@get-bb/plugin-sdk/app";
 import type { Preferences } from "./server";
 import { THEME_PACK } from "./theme-pack";
+import { ART, SHADERS, isArt, type WallpaperId } from "./wallpapers";
 
 const PLUGIN_ID = "beautiful-bb";
-const WALLPAPERS: Preferences["wallpaper"][] = ["headphones", "coder", "capybara", "kitsune", "samurai", "robot"];
 
 let sdk: PluginBrowserBbSdk | null = null;
 
@@ -27,21 +27,22 @@ async function rpc<T>(method: string, input: unknown): Promise<T> {
 
 export const themeSelectionId = (id: string) => `plugin:${PLUGIN_ID}:${id}`;
 
-/** Apply a pack theme and the wallpaper it pairs with, unless wallpapers are off. */
+/** Apply a pack theme, and the art it pairs with when a bundled piece is showing. */
 export async function applyTheme(handle: PluginBrowserBbSdk, themeId: string) {
   const theme = THEME_PACK.find((t) => t.id === themeId);
   if (!theme) return;
   await handle.theme.set(themeSelectionId(theme.id));
   const prefs = await rpc<Preferences>("settings_get", null);
-  if (prefs.wallpaper !== "none" && prefs.wallpaper !== "custom") {
+  if (isArt(prefs.wallpaper)) {
     await rpc("settings_set", { wallpaper: theme.wallpaper });
   }
 }
 
 export async function nextWallpaper() {
   const prefs = await rpc<Preferences>("settings_get", null);
-  const i = WALLPAPERS.indexOf(prefs.wallpaper);
-  await rpc("settings_set", { wallpaper: WALLPAPERS[(i + 1) % WALLPAPERS.length] });
+  const cycle: WallpaperId[] = [...SHADERS, ...ART].map((w) => w.id);
+  const i = cycle.indexOf(prefs.wallpaper);
+  await rpc("settings_set", { wallpaper: cycle[(i + 1) % cycle.length] });
 }
 
 export async function nextTheme() {

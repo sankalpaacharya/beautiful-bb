@@ -15,7 +15,7 @@
   },
   "bb": {
     "name": "Beautiful bb",
-    "description": "Make bb beautiful: the T3 Night theme, a compact usage card, a wave spinner, and anime home wallpapers drawn in ASCII. Switch each feature on or off in settings.",
+    "description": "Make bb beautiful: the T3 Night theme, a compact usage card, a wave spinner, and a dithered home wallpaper. Switch each feature on or off in settings.",
     "branding": {
       "icon": "./assets/icon.svg",
       "experimental_icons": {
@@ -27,7 +27,7 @@
       {
         "id": "t3-night",
         "name": "T3 Night",
-        "description": "T3 Code's zinc palette with a lavender accent and a starry sidebar",
+        "description": "T3 Code's zinc palette with a lavender accent",
         "css": "./themes/t3-night.css",
         "codeTheme": {
           "dark": "./themes/t3-night-code-dark.json",

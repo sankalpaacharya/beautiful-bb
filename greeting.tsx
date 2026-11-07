@@ -5,9 +5,9 @@ import {
   experimental_useSidebarThreads as useSidebarThreads,
   useBbNavigate,
   useRpc,
-  useSettings,
 } from "@get-bb/plugin-sdk/app";
 import type { rpcContract } from "./server";
+import { usePreferences } from "./use-preferences";
 import "./greeting.css";
 
 const tokenCount = new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 });
@@ -28,7 +28,7 @@ function ago(ms: number) {
 }
 
 export function HomeGreeting() {
-  const { values } = useSettings();
+  const prefs = usePreferences();
   const rpc = useRpc<typeof rpcContract>();
   const navigate = useBbNavigate();
   const { threads } = useSidebarThreads();
@@ -38,7 +38,7 @@ export function HomeGreeting() {
     rpc.call("greeting", null).then(setData, () => setData({ name: null, tokensToday: 0 }));
   }, [rpc]);
 
-  if (values?.homeGreeting === false || !data) return null;
+  if (!prefs?.homeGreeting || !data) return null;
 
   const last = threads
     .filter((t) => t.status === "idle" && !t.isArchived && !t.isHidden)

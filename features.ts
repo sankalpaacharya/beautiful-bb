@@ -5,14 +5,13 @@ import type {
   ExperimentalSidebarFooterDisclosureController,
   PluginComposerThreadRowStatus,
 } from "@get-bb/plugin-sdk/app";
+import type { Preferences } from "./server";
+import { applyTypography } from "./typography";
 
-export type FeatureSwitches = {
-  usageCard: boolean;
-  waveSpinner: boolean;
-  composerGlow: boolean;
-  agentActivity: boolean;
-  fontScale: number;
-};
+export type FeatureSwitches = Pick<
+  Preferences,
+  "usageCard" | "waveSpinner" | "composerGlow" | "agentActivity" | "font" | "fontScale"
+>;
 
 let usageCard: ExperimentalSidebarFooterDisclosureController | null = null;
 
@@ -50,39 +49,7 @@ export function applyFeatures(features: FeatureSwitches) {
   root.toggleAttribute("data-bbb-wave", features.waveSpinner);
   root.toggleAttribute("data-bbb-glow", features.composerGlow);
   root.toggleAttribute("data-bbb-activity", features.agentActivity);
-  applyFontScale(features.fontScale);
-}
-
-/**
- * bb's desktop type scale in rem: [size, line height]. Line heights given as
- * rem scale with the text; bb's unitless ratios stay as they are.
- */
-const TYPE_SCALE: Record<string, [number, number | null]> = {
-  "2xs": [0.625, 0.875],
-  xs: [0.75, 1],
-  sm: [0.8125, null],
-  base: [0.9375, 1.375],
-  lg: [1.125, null],
-  xl: [1.25, null],
-  "2xl": [1.5, null],
-};
-
-/**
- * Text size slider: rewrites bb's --text-* tokens as inline styles on <html>,
- * which outrank theme stylesheets. Touch screens keep bb's own mobile scale.
- */
-export function applyFontScale(percent: number) {
-  const style = document.documentElement.style;
-  const fine = window.matchMedia("(pointer: fine)").matches;
-  for (const [step, [size, lineHeight]] of Object.entries(TYPE_SCALE)) {
-    if (!fine) {
-      style.removeProperty(`--text-${step}`);
-      style.removeProperty(`--text-${step}--line-height`);
-      continue;
-    }
-    style.setProperty(`--text-${step}`, `${((size * percent) / 100).toFixed(4)}rem`);
-    if (lineHeight !== null) style.setProperty(`--text-${step}--line-height`, `${((lineHeight * percent) / 100).toFixed(4)}rem`);
-  }
+  applyTypography(features);
 }
 
 type RowStatusSetter = (threadId: string, status: PluginComposerThreadRowStatus | null) => void;

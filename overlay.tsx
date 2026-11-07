@@ -2,32 +2,15 @@
 // settings (live, through the settings-changed signal) and runs Agent
 // activity: a wave on working threads' sidebar rows and a sparkle burst on the
 // row when a thread finishes.
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  experimental_useSidebarThreads as useSidebarThreads,
-  useRealtime,
-  useRpc,
-  useSdk,
-} from "@get-bb/plugin-sdk/app";
-import type { Preferences, rpcContract } from "./server";
+import { useEffect, useRef } from "react";
+import { experimental_useSidebarThreads as useSidebarThreads, useSdk } from "@get-bb/plugin-sdk/app";
+import { usePreferences } from "./use-preferences";
 import { applyFeatures, rowStatus } from "./features";
 import { shareSdk } from "./actions";
 import "./effects.css";
 
-const SETTINGS_CHANGED = "settings-changed";
 const BUSY = new Set(["starting", "active", "stopping"]);
 const SPARKS = ["✦", "✧", "*", "+", "·", "✦", "⋆", "+"];
-
-export function usePreferences() {
-  const rpc = useRpc<typeof rpcContract>();
-  const [prefs, setPrefs] = useState<Preferences | null>(null);
-  const refetch = useCallback(() => {
-    rpc.call("settings_get", null).then(setPrefs, () => {});
-  }, [rpc]);
-  useEffect(refetch, [refetch]);
-  useRealtime(SETTINGS_CHANGED, refetch);
-  return prefs;
-}
 
 /** A short burst of accent glyphs over a sidebar row. */
 function burst(threadId: string) {

@@ -1,6 +1,5 @@
 /* Home wallpaper. The layer sits in the home pane (the nearest positioned
-   ancestor), behind the composer and recent threads, and fades out toward the
-   composer at the top so typing stays readable. */
+   ancestor), behind the composer and recent threads. */
 
 /* bb gives every home section a heading; this one is only a backdrop. */
 section[id="plugin-homepage:beautiful-bb:wallpaper"] {
@@ -16,30 +15,29 @@ section[id="plugin-homepage:beautiful-bb:wallpaper"] > :not([data-bb-plugin-root
   isolation: isolate;
 }
 
+/* In the desktop app the pane's top padding is the window's title-bar strip,
+   painted by the window frame rather than the pane; start below it so the
+   art never shows through the frame as a lighter band. */
 .bbb-wallpaper {
   position: absolute;
-  inset: 0;
+  inset: var(--bb-window-frame-top, 0px) 0 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  color: var(--ink, var(--foreground));
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 55%) 30%, #000 60%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 55%) 30%, #000 60%);
 }
 
-.bbb-wallpaper-ascii {
+.bbb-wallpaper-shader {
   display: block;
   width: 100%;
   height: 100%;
-  opacity: 0.28;
-}
-.bbb-wallpaper[data-style="ascii-color"] .bbb-wallpaper-ascii {
-  opacity: 0.42;
 }
 
+/* Photos fade out toward the composer at the top so typing stays readable. */
 .bbb-wallpaper-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0.35;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 55%) 30%, #000 60%);
+  mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 55%) 30%, #000 60%);
 }

@@ -14,6 +14,7 @@ import "./usage-card.css";
 import "./working-spinner.css";
 import { HomeWallpaper } from "./wallpaper";
 import { setRowStatusSetter, setUsageCardController, toggleFocusMode } from "./features";
+import { mountTypography } from "./typography";
 import { SettingsPage } from "./settings-page";
 import { EffectsOverlay } from "./overlay";
 import { HomeGreeting } from "./greeting";
@@ -155,6 +156,7 @@ export default definePluginApp((app) => {
   );
   // Only a content script may decorate thread rows; hand its setter to the
   // effects overlay, which marks working threads.
+  app.contentScripts.register({ id: "typography", mount: mountTypography });
   app.contentScripts.register({
     id: "thread-row-status",
     mount(context) {

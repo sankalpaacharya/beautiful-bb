@@ -1,6 +1,5 @@
 /* T3 Night: the T3 Code look for bb, ported from pingdotgg/t3code apps/web/src/index.css.
-   Source file: run `node scripts/build-themes.mjs` to embed assets/space-banner.jpg
-   and write themes/t3-night.css.
+   Source file: run `node scripts/build-themes.mjs` to write themes/t3-night.css.
    Zinc light surfaces, near-black neutral dark, indigo accent, system fonts. */
 
 :root,
@@ -138,54 +137,3 @@ textarea,
   scrollbar-color: color-mix(in oklch, var(--ink) 18%, transparent) transparent;
 }
 
-/* T3 Code sidebar banner. Dark mode: Hubble eXtreme Deep Field (NASA, ESA;
-   public domain) tinted with T3's night-sky purple, embedded so it loads offline. Light mode: pastel sky.
-   The art sits behind the sidebar content and fades into the sidebar surface. */
-[data-sidebar="sidebar"] {
-  position: relative;
-  isolation: isolate;
-  background: var(--sidebar);
-}
-
-[data-sidebar="sidebar"]::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 260px;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(110% 70% at 15% 0%, oklch(0.895 0.053 286 / 70%), transparent 65%),
-    radial-gradient(70% 60% at 92% 10%, oklch(0.951 0.037 215 / 80%), transparent 70%),
-    linear-gradient(to bottom, oklch(0.782 0.123 240), oklch(0.86 0.08 250) 55%, var(--sidebar));
-  -webkit-mask-image: linear-gradient(to bottom, #000, rgb(0 0 0 / 85%) 35%, rgb(0 0 0 / 40%) 65%, transparent);
-  mask-image: linear-gradient(to bottom, #000, rgb(0 0 0 / 85%) 35%, rgb(0 0 0 / 40%) 65%, transparent);
-}
-
-.dark [data-sidebar="sidebar"]::before {
-  background:
-    radial-gradient(80% 60% at 80% 0%, oklch(0.5 0.2 300 / 45%), transparent 70%),
-    radial-gradient(70% 50% at 10% 75%, oklch(0.5 0.16 260 / 35%), transparent 70%),
-    linear-gradient(to bottom, oklch(0.24 0.1 290), oklch(0.18 0.06 275) 60%, oklch(0.15 0.03 270 / 0%));
-}
-
-/* The starfield sits on its own dimmed layer, screened over the tint. */
-.dark [data-sidebar="sidebar"]::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 190px;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.5;
-  mix-blend-mode: screen;
-  background: url("__SPACE_BANNER__") center top / cover no-repeat;
-  -webkit-mask-image: linear-gradient(to bottom, #000 20%, transparent);
-  mask-image: linear-gradient(to bottom, #000 20%, transparent);
-}
-
-/* Let the banner show through the sidebar body and the thread list. */
-[data-sidebar="sidebar"] [data-sidebar="content"],
-[data-sidebar="sidebar"] [data-testid="app-nav-rail"] {
-  background-color: transparent;
-}

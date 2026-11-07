@@ -1,6 +1,6 @@
 // The theme pack: T3 Night plus popular editor themes in their official
 // palettes (colors taken from each theme's own VS Code theme file). Every
-// theme builds on themes/t3-night.src.css (fonts, larger type, banner, polish)
+// theme builds on themes/t3-night.src.css (fonts, larger type, polish)
 // and swaps in its palette. One accent drives bb's primary (buttons, links,
 // focus rings, selection), file paths, sidebar status tones, and the plugin's
 // own pieces; red/green/yellow keep their meaning.
@@ -15,7 +15,7 @@ export const THEMES = [
   {
     id: "t3-night",
     name: "T3 Night",
-    description: "T3 Code's zinc palette with a lavender accent and a starry sidebar",
+    description: "T3 Code's zinc palette with a lavender accent",
     wallpaper: "headphones",
     base: true,
     accent: { light: "oklch(0.55 0.17 295)", dark: "oklch(0.78 0.11 295)" },

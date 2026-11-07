@@ -4,38 +4,25 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { experimental_usePluginId as usePluginId, useRpc, useSdk } from "@get-bb/plugin-sdk/app";
 import type { Preferences, rpcContract } from "./server";
-import { applyFeatures, applyFontScale, toggleFocusMode } from "./features";
+import { applyFeatures, toggleFocusMode } from "./features";
+import { applyFontScale, loadFontSample } from "./typography";
+import { FONTS } from "./fonts";
 import { applyTheme, themeSelectionId } from "./actions";
 import { THEME_PACK } from "./theme-pack";
-import { AsciiArt } from "./wallpaper";
+import { ShaderWallpaper } from "./shader-wallpaper";
+import { SHADER_COLORS, SHADER_COLOR_CSS, WALLPAPERS, isArt, isShader, type ShaderColorId, type WallpaperId } from "./wallpapers";
 import "./settings-page.css";
 
 
-const WALLPAPERS: { id: Preferences["wallpaper"]; label: string }[] = [
-  { id: "none", label: "None" },
-  { id: "headphones", label: "Headphones girl" },
-  { id: "coder", label: "Late-night coder" },
-  { id: "capybara", label: "Astronaut capybara" },
-  { id: "kitsune", label: "Sleeping kitsune" },
-  { id: "samurai", label: "Samurai" },
-  { id: "robot", label: "Robot buddy" },
-  { id: "custom", label: "Your image" },
-];
-
-/** Tiles are about a sixth of the home pane's width, so glyphs shrink to match. */
-const TILE_CELL = { w: 2, h: 3.6 };
-
-/** A tile drawn the way the home screen would draw this wallpaper. */
-function Preview({ src, style }: { src: string; style: Preferences["wallpaperStyle"] }) {
-  if (style === "photo") return <img className="bbs-preview-photo" src={src} alt="" loading="lazy" />;
-  return <AsciiArt key={`${src}:${style}`} src={src} colorful={style === "ascii-color"} cell={TILE_CELL} className="bbs-preview-ascii" />;
+/** A wallpaper tile's art, drawn the way the home screen draws it. */
+function WallpaperPreview({ id, color, thumb }: { id: WallpaperId; color: ShaderColorId; thumb: (id: string) => string }) {
+  if (isShader(id)) {
+    return <ShaderWallpaper className="bbs-preview-shader" style={id} color={SHADER_COLOR_CSS[color]} animate={false} scale={0.6} />;
+  }
+  if (isArt(id)) return <img className="bbs-preview-photo" src={thumb(id)} alt="" loading="lazy" />;
+  if (id === "custom") return <span>Image URL or file</span>;
+  return null;
 }
-
-const STYLES: { id: Preferences["wallpaperStyle"]; label: string }[] = [
-  { id: "ascii-color", label: "Colorful ASCII" },
-  { id: "ascii", label: "ASCII" },
-  { id: "photo", label: "Photo" },
-];
 
 function Switch({ checked, label, onChange }: { checked: boolean; label: string; onChange: (next: boolean) => void }) {
   return (
@@ -64,7 +51,6 @@ function Row({ title, detail, control }: { title: string; detail: string; contro
   );
 }
 
-/** The active pack theme id, or "default" when bb's own palette (or another theme) is on. */
 const DEFAULT_FONT_SCALE = 107;
 
 /** Text size slider: resizes live while dragging, saves once the hand settles. */
@@ -103,6 +89,33 @@ function TextSize({ value, onSave }: { value: number; onSave: (percent: number) 
   );
 }
 
+/** Font tiles, each drawn in its own font; web fonts load only the sample's glyphs. */
+function FontPicker({ value, onChange }: { value: Preferences["font"]; onChange: (id: Preferences["font"]) => void }) {
+  useEffect(() => FONTS.forEach((f) => loadFontSample(f, "Aa")), []);
+  return (
+    <div className="bbs-fonts" role="radiogroup" aria-label="Font">
+      {FONTS.map((f) => (
+        <button
+          key={f.id}
+          type="button"
+          role="radio"
+          aria-checked={value === f.id}
+          className="bbs-font"
+          style={f.source.kind === "theme" ? undefined : { fontFamily: f.source.family }}
+          onClick={() => onChange(f.id)}
+        >
+          <span className="bbs-font-sample" aria-hidden="true">
+            Aa
+          </span>
+          <span className="bbs-theme-name">{f.name}</span>
+          <span className="bbs-theme-detail">{f.detail}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** The active pack theme id, or "default" when bb's own palette (or another theme) is on. */
 function useActiveTheme() {
   const sdk = useSdk();
   const [active, setActive] = useState<string | null>(null);
@@ -210,7 +223,13 @@ export function SettingsPage() {
             </button>
           ))}
         </div>
-        <p className="bbs-section-detail">Popular editor themes in their official colors, with matching code colors. Each also switches the home wallpaper to the one it pairs with, when a built-in wallpaper is on.</p>
+        <p className="bbs-section-detail">Popular editor themes in their official colors, with matching code colors. Each also switches the home wallpaper to the one it pairs with, when one of the bundled pieces is on.</p>
+      </section>
+
+      <section className="bbs-section" aria-labelledby="bbs-font">
+        <h2 id="bbs-font">Font</h2>
+        <FontPicker value={prefs.font} onChange={(font) => update({ font })} />
+        <p className="bbs-section-detail">The font for bb's interface text, in every theme. Code and the terminal keep their monospace font. Web fonts load from Google Fonts.</p>
       </section>
 
       <section className="bbs-section" aria-labelledby="bbs-textsize">
@@ -259,23 +278,7 @@ export function SettingsPage() {
       </section>
 
       <section className="bbs-section" aria-labelledby="bbs-wallpaper">
-        <div className="bbs-section-head">
-          <h2 id="bbs-wallpaper">Home wallpaper</h2>
-          <div className="bbs-segmented" role="radiogroup" aria-label="Wallpaper style">
-            {STYLES.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                role="radio"
-                aria-checked={prefs.wallpaperStyle === s.id}
-                disabled={prefs.wallpaper === "none"}
-                onClick={() => update({ wallpaperStyle: s.id })}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <h2 id="bbs-wallpaper">Home wallpaper</h2>
         <p className="bbs-section-detail">Shown behind the new-thread screen, which Cmd+N opens.</p>
         <div className="bbs-list bbs-list-tight">
           <Row
@@ -283,13 +286,35 @@ export function SettingsPage() {
             detail="A hello with today's token count and the thread that finished last."
             control={<Switch label="Home greeting" checked={prefs.homeGreeting} onChange={(v) => update({ homeGreeting: v })} />}
           />
-          <Row
-            title="Living wallpaper"
-            detail="The ASCII art flickers gently, like a terminal printout."
-            control={
-              <Switch label="Living wallpaper" checked={prefs.livingWallpaper} onChange={(v) => update({ livingWallpaper: v })} />
-            }
-          />
+          {isShader(prefs.wallpaper) && (
+            <>
+              <Row
+                title="Color"
+                detail="Theme accent and Neutral follow the active theme."
+                control={
+                  <div className="bbs-swatches" role="radiogroup" aria-label="Wallpaper color">
+                    {SHADER_COLORS.map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={prefs.shaderColor === c.id}
+                        aria-label={c.label}
+                        title={c.label}
+                        style={{ color: c.css }}
+                        onClick={() => update({ shaderColor: c.id })}
+                      />
+                    ))}
+                  </div>
+                }
+              />
+              <Row
+                title="Animate"
+                detail="The pattern drifts slowly. Reduced motion keeps it still either way."
+                control={<Switch label="Animate" checked={prefs.animateShader} onChange={(v) => update({ animateShader: v })} />}
+              />
+            </>
+          )}
         </div>
         <div className="bbs-grid" role="radiogroup" aria-label="Home wallpaper">
           {WALLPAPERS.map((w) => (
@@ -302,8 +327,7 @@ export function SettingsPage() {
               onClick={() => update({ wallpaper: w.id })}
             >
               <span className="bbs-tile-art" data-kind={w.id === "none" || w.id === "custom" ? w.id : undefined}>
-                {w.id !== "none" && w.id !== "custom" && <Preview src={thumb(w.id)} style={prefs.wallpaperStyle} />}
-                {w.id === "custom" && <span>Image URL or file</span>}
+                <WallpaperPreview id={w.id} color={prefs.shaderColor} thumb={thumb} />
               </span>
               <span className="bbs-tile-label">{w.label}</span>
             </button>

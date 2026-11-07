@@ -11,6 +11,17 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { defineRpcContract, type BbPluginApi } from "@get-bb/plugin-sdk";
 import { z } from "zod";
+import { FONTS, FONT_IDS } from "./fonts";
+import {
+  ART,
+  DEFAULT_SHADER_COLOR,
+  DEFAULT_WALLPAPER,
+  SHADER_COLORS,
+  SHADER_COLOR_IDS,
+  WALLPAPERS,
+  WALLPAPER_IDS,
+  isArt,
+} from "./wallpapers";
 import { dailyTokens, type DailyTokens } from "./tokens";
 
 const TOKENS_TTL_MS = 5 * 60 * 1000;
@@ -52,19 +63,6 @@ export const rpcContract = defineRpcContract({
 
 const NAMES: Record<string, string> = { "claude-code": "Claude", codex: "Codex" };
 
-/** Wallpapers bundled in assets/wallpapers/<id>.jpg (original art made for this plugin). */
-export const BUILT_IN_WALLPAPERS = {
-  headphones: "Headphones girl",
-  coder: "Late-night coder",
-  capybara: "Astronaut capybara",
-  kitsune: "Sleeping kitsune",
-  samurai: "Samurai",
-  robot: "Robot buddy",
-} as const;
-
-const WALLPAPER_IDS = ["none", ...Object.keys(BUILT_IN_WALLPAPERS), "custom"] as const;
-const STYLE_IDS = ["ascii-color", "ascii", "photo"] as const;
-
 /** Everything the plugin's settings page reads and writes. */
 const preferencesSchema = z.object({
   usageCard: z.boolean(),
@@ -72,12 +70,14 @@ const preferencesSchema = z.object({
   agentActivity: z.boolean(),
   composerGlow: z.boolean(),
   homeGreeting: z.boolean(),
-  livingWallpaper: z.boolean(),
+  animateShader: z.boolean(),
+  shaderColor: z.enum(SHADER_COLOR_IDS),
   /** Text size as a percent of bb's default type scale. */
   fontScale: z.number().int().min(85).max(140),
+  /** UI font; "theme" keeps the active theme's own. */
+  font: z.enum(FONT_IDS),
   wallpaper: z.enum(WALLPAPER_IDS),
   customWallpaper: z.string().max(2048),
-  wallpaperStyle: z.enum(STYLE_IDS),
 });
 export type Preferences = z.infer<typeof preferencesSchema>;
 
@@ -157,19 +157,35 @@ export default async function plugin(bb: BbPluginApi) {
       description: "Text size across bb, as a percent of bb's default (85 to 140). Spacing stays the same.",
       default: 107,
     },
-    livingWallpaper: {
+    font: {
+      type: "select",
+      label: "Font",
+      description: "The font for bb's interface text. Code and the terminal keep their monospace font.",
+      options: [...FONT_IDS],
+      experimental_optionLabels: Object.fromEntries(FONTS.map((f) => [f.id, f.name])),
+      default: "theme",
+    },
+    animateShader: {
       type: "boolean",
-      label: "Living wallpaper",
-      description: "Let the ASCII wallpaper flicker gently, like a terminal printout.",
+      label: "Animate wallpaper",
+      description: "Let the Dither and Glow wallpapers drift slowly. Reduced motion keeps them still either way.",
       default: true,
+    },
+    shaderColor: {
+      type: "select",
+      label: "Wallpaper color",
+      description: "The color of the Dither and Glow wallpapers.",
+      options: [...SHADER_COLOR_IDS],
+      experimental_optionLabels: Object.fromEntries(SHADER_COLORS.map((c) => [c.id, c.label])),
+      default: DEFAULT_SHADER_COLOR,
     },
     wallpaper: {
       type: "select",
       label: "Home wallpaper",
       description: "Art behind the home screen (the new-thread page, also opened with Cmd+N).",
       options: [...WALLPAPER_IDS],
-      experimental_optionLabels: { none: "None", ...BUILT_IN_WALLPAPERS, custom: "Custom image" },
-      default: "none",
+      experimental_optionLabels: Object.fromEntries(WALLPAPERS.map((w) => [w.id, w.label])),
+      default: DEFAULT_WALLPAPER,
     },
     customWallpaper: {
       type: "string",
@@ -177,32 +193,24 @@ export default async function plugin(bb: BbPluginApi) {
       description: "Used when Home wallpaper is Custom image: an image URL, or a file path such as ~/Pictures/wallpaper.jpg.",
       default: "",
     },
-    wallpaperStyle: {
-      type: "select",
-      label: "Wallpaper style",
-      description: "Draw the wallpaper as a colorful ASCII texture, a one-color ASCII texture, or the image itself.",
-      options: [...STYLE_IDS],
-      experimental_optionLabels: { "ascii-color": "Colorful ASCII", ascii: "ASCII", photo: "Photo" },
-      default: "ascii-color",
-    },
   });
+
+  const readPreferences = async (): Promise<Preferences> => preferencesSchema.parse(await settings.get());
+  settings.onChange(() => bb.realtime.publish(SETTINGS_CHANGED, null));
 
   // Serves the selected wallpaper: a bundled one, or a custom local file.
   // Custom URLs load directly in the browser and never reach this route.
   bb.http.route("GET", "/wallpaper", async () => {
-    const { wallpaper, customWallpaper } = await settings.get();
-    if (wallpaper in BUILT_IN_WALLPAPERS) return serveImage(join(assetsDir(), "wallpapers", `${wallpaper}.jpg`));
+    const { wallpaper, customWallpaper } = await readPreferences();
+    if (isArt(wallpaper)) return serveImage(join(assetsDir(), "wallpapers", `${wallpaper}.jpg`));
     const path = wallpaper === "custom" ? localPath(customWallpaper) : null;
     return path ? serveImage(path) : new Response("No wallpaper file is set", { status: 404 });
   });
 
   // Thumbnails for the settings page's wallpaper picker.
-  for (const id of Object.keys(BUILT_IN_WALLPAPERS)) {
+  for (const { id } of ART) {
     bb.http.route("GET", `/wallpapers/${id}`, () => serveImage(join(assetsDir(), "wallpapers", `${id}.jpg`)));
   }
-
-  const readPreferences = async (): Promise<Preferences> => preferencesSchema.parse(await settings.get());
-  settings.onChange(() => bb.realtime.publish(SETTINGS_CHANGED, null));
 
   // First name for the home greeting: git's user.name, else the account name.
   const firstName = (async () => {
