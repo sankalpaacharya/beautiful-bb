@@ -12,7 +12,7 @@ rail. Changes apply right away. The same settings are also available with
 | Text size | Slider from 85% to 140% that resizes text everywhere, in every theme | 107% |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
 | Agent activity | A wave on working threads in the sidebar, sparkles when one finishes | On |
-| Wave spinner | Wave spinner instead of the "Working..." shimmer | On |
+| Wave spinner | 4x4 shade grid instead of the "Working..." shimmer | On |
 | Composer accent | Thin accent border on the message box while typing | Off |
 | Focus mode | Hides the sidebar and dims chrome; Cmd+Shift+F | Off |
 | Home greeting | Hello, today's tokens, and the last finished thread on the home screen | On |
@@ -69,8 +69,9 @@ output, and cache writes, not cache reads.
 
 ## Wave spinner
 
-The shimmering "Working..." line in a running thread becomes a 3x3 lavender
-wave spinner (after [WaveSpinner](https://ui.heygaia.io/docs/components/wave-spinner)).
+The shimmering "Working..." line in a running thread becomes Armada's 4x4
+shade grid: a bright diagonal front sweeping from the top-left corner, in the
+theme's accent colour.
 `working-spinner.css` is generated: edit `scripts/build-wave-spinner.mjs` and
 run `node scripts/build-wave-spinner.mjs`.
 
