@@ -1,11 +1,9 @@
 /* Effects: agent-done sparkle burst, the working-row wave glyph, the composer
-   accent border, and focus mode. All colors follow the theme accent. */
+   accent border, and focus mode. All colors follow the theme accent: a pack
+   theme's --bbb-accent, else bb's own --primary, which every bb theme sets. */
 
 :root {
-  --bbb-fx: var(--bbb-accent, oklch(0.55 0.17 295));
-}
-.dark {
-  --bbb-fx: var(--bbb-accent, oklch(0.78 0.11 295));
+  --bbb-fx: var(--bbb-accent, var(--primary));
 }
 
 /* Sparkle burst over a sidebar row when its thread finishes. */
