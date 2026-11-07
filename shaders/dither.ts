@@ -1,7 +1,17 @@
-// WebGL renderer for the shader wallpapers. Pass one evaluates the drifting
-// noise field once per cell into a small texture; pass two draws the chosen
-// style from it. The noise is the expensive part, so it runs on the cell grid
-// instead of on every device pixel.
+// Dither effect, after React Bits' Dither background. Pass one evaluates the
+// flowing waves once per cell into a small texture; pass two dithers them into
+// pixels. The noise is the expensive part, so it runs on the cell grid instead
+// of on every device pixel.
+import {
+  LAYOUT_GLSL,
+  deviceSize,
+  setLayoutUniforms,
+  type EffectColors,
+  type EffectFactory,
+} from "./types";
+
+/** Pixel size in CSS pixels. */
+const CELL = 2;
 
 const VERTEX = `
 attribute vec2 aPos;
@@ -71,62 +81,6 @@ void main() {
 }
 `;
 
-/** Slow domain-warped value noise for Glow. */
-const FIELD = `
-precision highp float;
-uniform vec2 uRes;
-uniform vec2 uFieldSize;
-uniform float uCell;
-uniform float uTime;
-
-float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
-float noise(vec2 p) {
-  vec2 i = floor(p);
-  vec2 f = fract(p);
-  vec2 u = f * f * (3.0 - 2.0 * f);
-  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
-}
-float fbm(vec2 p) {
-  float v = 0.0;
-  float a = 0.5;
-  for (int i = 0; i < 5; i++) {
-    v += a * noise(p);
-    p = p * 2.0 + vec2(17.0, 9.0);
-    a *= 0.5;
-  }
-  return v;
-}
-
-void main() {
-  vec2 center = vec2(gl_FragCoord.x, uFieldSize.y - gl_FragCoord.y) * uCell;
-  vec2 p = center / uRes.y;
-  // Domain-warped fbm reads as soft rolling waves.
-  vec2 q = vec2(fbm(p * 2.2 + uTime * 0.004), fbm(p * 2.2 + vec2(5.2, 1.3) - uTime * 0.003));
-  gl_FragColor = vec4(fbm(p * 2.6 + q * 1.6), 0.0, 0.0, 1.0);
-}
-`;
-
-/**
- * Where the pattern sits: anchored to the top or bottom edge, reaching
- * `uReach` times each style's own depth, optionally weighted toward the left
- * and right edges, and dissolving over `uEdgeFade` of the height next to the
- * anchored edge so it doesn't end in a flat line there.
- */
-const LAYOUT = `
-uniform float uAnchor;
-uniform float uSides;
-uniform float uReach;
-uniform float uEdgeFade;
-
-float edgeDistance(float yFromTop) { return mix(yFromTop, 1.0 - yFromTop, uAnchor) / uReach; }
-float edgeIn(float yFromTop) {
-  return uEdgeFade > 0.0 ? smoothstep(0.0, uEdgeFade, mix(yFromTop, 1.0 - yFromTop, uAnchor)) : 1.0;
-}
-float sideWeight(float x, float least) {
-  return mix(1.0, mix(least, 1.0, smoothstep(0.2, 0.85, abs(x - 0.5) * 2.0)), uSides);
-}
-`;
-
 /**
  * Dither, after React Bits: the waves offset by an 8x8 Bayer matrix and
  * quantized to a few alpha levels, one per cell. The layout fades the waves
@@ -141,7 +95,7 @@ uniform vec2 uFieldSize;
 uniform float uCell;
 uniform vec3 uColor;
 uniform float uAlpha;
-${LAYOUT}
+${LAYOUT_GLSL}
 const float LEVELS = 3.0;
 
 float bayer2(vec2 a) { a = floor(a); return fract(a.x / 2.0 + a.y * a.y * 0.75); }
@@ -154,8 +108,7 @@ void main() {
   vec2 center = (cell + 0.5) * uCell;
   vec4 texel = texture2D(uField, vec2((cell.x + 0.5) / uFieldSize.x, 1.0 - (cell.y + 0.5) / uFieldSize.y));
 
-  float fall = 1.0 - smoothstep(0.0, 0.55, edgeDistance(center.y / uRes.y));
-  float f = (texel.r + texel.g / 255.0) * fall * edgeIn(center.y / uRes.y) * sideWeight(center.x / uRes.x, 0.15);
+  float f = (texel.r + texel.g / 255.0) * layoutMask(center.x / uRes.x, center.y / uRes.y, 0.55);
 
   float v = f + (bayer8(cell) - 0.25) / LEVELS;
   v = clamp(v - mix(0.2, 0.0, smoothstep(0.45, 0.8, v)), 0.0, 1.0);
@@ -163,71 +116,6 @@ void main() {
   gl_FragColor = vec4(uColor * a, a);
 }
 `;
-
-/**
- * Glow: a soft glow in the color, under a faint halftone grain in the text
- * color.
- */
-const GLOW = `
-precision highp float;
-uniform sampler2D uField;
-uniform vec2 uRes;
-uniform vec2 uFieldSize;
-uniform float uCell;
-uniform vec3 uColor;
-uniform vec3 uInk;
-uniform float uInkAlpha;
-${LAYOUT}
-void main() {
-  vec2 frag = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
-  vec2 cell = floor(frag / uCell);
-  vec2 center = (cell + 0.5) * uCell;
-  vec2 extent = uFieldSize * uCell;
-
-  float smoothWave = texture2D(uField, vec2(frag.x / extent.x, 1.0 - frag.y / extent.y)).r;
-  float glow = (1.0 - smoothstep(0.0, 0.75, edgeDistance(frag.y / uRes.y))) * edgeIn(frag.y / uRes.y) * sideWeight(frag.x / uRes.x, 0.12);
-  glow = glow * glow * 0.16 * (0.6 + 0.6 * smoothWave);
-
-  float cellWave = texture2D(uField, vec2((cell.x + 0.5) / uFieldSize.x, 1.0 - (cell.y + 0.5) / uFieldSize.y)).r;
-  float fall = (1.0 - smoothstep(0.0, 0.6, edgeDistance(center.y / uRes.y))) * edgeIn(center.y / uRes.y);
-  float v = clamp((cellWave - 0.2) * 1.8 * fall * fall * sideWeight(center.x / uRes.x, 0.12), 0.0, 1.0);
-  float r = 0.38 * uCell * sqrt(v);
-  float grain = (1.0 - smoothstep(r - 0.8, r + 0.8, length(frag - center))) * step(0.04, v) * uInkAlpha;
-
-  gl_FragColor = vec4(uColor * glow + uInk * grain, max(glow, grain));
-}
-`;
-
-const STYLES = {
-  dither: { field: WAVES, composite: DITHER },
-  glow: { field: FIELD, composite: GLOW },
-} as const;
-
-export type ShaderStyle = keyof typeof STYLES;
-
-export type ShaderLayout = {
-  anchor: "top" | "bottom";
-  /** Dense along the left and right edges, thin in the middle. */
-  sides: boolean;
-  /** Scales how far from the anchored edge the pattern reaches. */
-  reach: number;
-  /** Fraction of the height next to the anchored edge over which the pattern fades in; 0 keeps it at full strength there. */
-  edgeFade: number;
-};
-
-export type Rgb = readonly [number, number, number];
-
-/** `alpha` scales the dither's levels; `ink` and `inkAlpha` draw the glow's grain. */
-export type ShaderColors = { color: Rgb; alpha: number; ink: Rgb; inkAlpha: number };
-
-export type ShaderRenderer = {
-  /** Match the drawing buffer to the canvas's CSS size and pixel density. */
-  resize(): void;
-  setColors(colors: ShaderColors): void;
-  /** Draw the field at `seconds` of drift. */
-  draw(seconds: number): void;
-  dispose(): void;
-};
 
 type Program = { program: WebGLProgram; uniform(name: string): WebGLUniformLocation | null };
 
@@ -264,9 +152,9 @@ function compile(gl: WebGLRenderingContext, fragment: string): Program | null {
   return { program, uniform: (name) => gl.getUniformLocation(program, name) };
 }
 
-function createResources(gl: WebGLRenderingContext, style: ShaderStyle): Resources | null {
-  const field = compile(gl, STYLES[style].field);
-  const composite = compile(gl, STYLES[style].composite);
+function createResources(gl: WebGLRenderingContext): Resources | null {
+  const field = compile(gl, WAVES);
+  const composite = compile(gl, DITHER);
   const texture = gl.createTexture();
   const framebuffer = gl.createFramebuffer();
   const buffer = gl.createBuffer();
@@ -286,22 +174,16 @@ function createResources(gl: WebGLRenderingContext, style: ShaderStyle): Resourc
   return { field, composite, texture, framebuffer, buffer };
 }
 
-/** `cell` is the dot pitch in CSS pixels. Null when WebGL is unavailable. */
-export function createShaderRenderer(
-  canvas: HTMLCanvasElement,
-  style: ShaderStyle,
-  cell: number,
-  layout: ShaderLayout,
-): ShaderRenderer | null {
+export const createDither: EffectFactory = (canvas, { layout, scale }) => {
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, antialias: false, alpha: true });
   if (!gl) return null;
-  let resources = createResources(gl, style);
+  let resources = createResources(gl);
   if (!resources) return null;
 
-  let colors: ShaderColors = { color: [0, 0, 0], alpha: 0, ink: [0, 0, 0], inkAlpha: 0 };
+  let colors: EffectColors = { color: [0, 0, 0], alpha: 0, mode: "dark" };
   let fieldSize: [number, number] = [0, 0];
   let lastSeconds = 0;
-  const cellPx = () => Math.max(2, Math.round(cell * (window.devicePixelRatio || 1)));
+  const cellPx = () => Math.max(1, Math.round(CELL * scale * (window.devicePixelRatio || 1)));
 
   const sizeField = (r: Resources) => {
     const pitch = cellPx();
@@ -335,22 +217,14 @@ export function createShaderRenderer(
     gl.uniform1f(r.composite.uniform("uCell"), pitch);
     gl.uniform3f(r.composite.uniform("uColor"), ...colors.color);
     gl.uniform1f(r.composite.uniform("uAlpha"), colors.alpha);
-    gl.uniform1f(r.composite.uniform("uAnchor"), layout.anchor === "bottom" ? 1 : 0);
-    gl.uniform1f(r.composite.uniform("uSides"), layout.sides ? 1 : 0);
-    gl.uniform1f(r.composite.uniform("uReach"), layout.reach);
-    gl.uniform1f(r.composite.uniform("uEdgeFade"), layout.edgeFade);
-    gl.uniform3f(r.composite.uniform("uInk"), ...colors.ink);
-    gl.uniform1f(r.composite.uniform("uInkAlpha"), colors.inkAlpha);
+    setLayoutUniforms(gl, r.composite.program, layout);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 
   const resize = () => {
-    const { width, height } = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.max(1, Math.round(width * dpr));
-    canvas.height = Math.max(1, Math.round(height * dpr));
+    [canvas.width, canvas.height] = deviceSize(canvas);
     if (resources) sizeField(resources);
     draw(lastSeconds);
   };
@@ -361,7 +235,7 @@ export function createShaderRenderer(
     resources = null;
   };
   const onRestored = () => {
-    resources = createResources(gl, style);
+    resources = createResources(gl);
     if (resources) sizeField(resources);
     draw(lastSeconds);
   };
@@ -389,4 +263,4 @@ export function createShaderRenderer(
       gl.deleteBuffer(r.buffer);
     },
   };
-}
+};

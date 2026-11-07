@@ -3,11 +3,15 @@
 // activity: a wave on working threads' sidebar rows and a sparkle burst on the
 // row when a thread finishes.
 import { useEffect, useRef } from "react";
-import { experimental_useSidebarThreads as useSidebarThreads, useSdk } from "@get-bb/plugin-sdk/app";
+import {
+  experimental_useCodeTheme as useCodeTheme,
+  experimental_useSidebarThreads as useSidebarThreads,
+  useSdk,
+} from "@get-bb/plugin-sdk/app";
 import { usePreferences } from "./use-preferences";
 import { applyFeatures, rowStatus } from "./features";
 import { shareSdk } from "./actions";
-import { RailDither } from "./rail-dither";
+import { RailPattern } from "./rail-pattern";
 import { SHADER_COLOR_CSS } from "./wallpapers";
 import "./effects.css";
 
@@ -84,14 +88,18 @@ export function EffectsOverlay() {
   const prefs = usePreferences();
   const sdk = useSdk();
   useEffect(() => shareSdk(sdk), [sdk]);
+  // Themes set bb's text tokens, so the text-size scale is recomputed when the palette changes.
+  const { name: palette, mode } = useCodeTheme();
   useEffect(() => {
     if (prefs) applyFeatures(prefs);
-  }, [prefs]);
+  }, [prefs, palette, mode]);
   if (!prefs) return null;
   return (
     <>
       {prefs.agentActivity && <AgentActivity />}
-      {prefs.railDither && <RailDither color={SHADER_COLOR_CSS[prefs.shaderColor]} animate={prefs.animateShader} />}
+      {prefs.railPattern && prefs.wallpaper !== "none" && (
+        <RailPattern style={prefs.wallpaper} color={SHADER_COLOR_CSS[prefs.shaderColor]} animate={prefs.animateShader} />
+      )}
     </>
   );
 }

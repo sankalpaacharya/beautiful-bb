@@ -1,28 +1,18 @@
-// Shader wallpaper: a slowly drifting WebGL field drawn as Dither (small
-// squares through a Bayer matrix) or Glow (a soft glow under a faint grain),
-// fading out from one edge of its container.
+// Shader wallpaper: one of the WebGL effects, sized to its container, fed the
+// wallpaper color and the theme's light or dark mode, and animated unless
+// motion is off.
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { experimental_useCodeTheme as useCodeTheme } from "@get-bb/plugin-sdk/app";
-import {
-  createShaderRenderer,
-  type Rgb,
-  type ShaderLayout,
-  type ShaderRenderer,
-  type ShaderStyle,
-} from "./shader-renderer";
+import { EFFECTS } from "./shaders/index";
+import type { EffectLayout, EffectRenderer, Rgb } from "./shaders/types";
+import type { ShaderId } from "./wallpapers";
 
 const FRAME_MS = 1000 / 30;
 
-/** Dot pitch in CSS pixels. */
-const CELL: Record<ShaderStyle, number> = { dither: 2, glow: 5 };
+/** The home pane: from the top and bottom edges, thin in the middle behind the composer. */
+export const HOME_LAYOUT: EffectLayout = { anchor: "both", sides: true, reach: 0.7, edgeFade: 0 };
 
-/** The home pane: from the top, thin in the middle behind the composer. */
-export const HOME_LAYOUT: ShaderLayout = { anchor: "top", sides: true, reach: 1, edgeFade: 0 };
-
-const TONES = {
-  dark: { alpha: 0.42, ink: [1, 1, 1], inkAlpha: 0.16 },
-  light: { alpha: 0.5, ink: [0, 0, 0], inkAlpha: 0.1 },
-} as const;
+const ALPHA = { dark: 0.42, light: 0.5 } as const;
 
 let probe: CanvasRenderingContext2D | null = null;
 
@@ -44,26 +34,29 @@ const subscribeReducedMotion = (onChange: () => void) => {
 
 /**
  * `color` is any CSS color, including `var(...)` tokens; `animate` lets the
- * field drift; `scale` shrinks the dots, for previews.
+ * effect move; `scale` shrinks its cells, for previews.
  */
-export function ShaderWallpaper({
-  style,
-  color,
-  animate,
-  layout = HOME_LAYOUT,
-  scale = 1,
-  className,
-}: {
-  style: ShaderStyle;
+type ShaderWallpaperProps = {
+  style: ShaderId;
   color: string;
   animate: boolean;
-  layout?: ShaderLayout;
+  layout?: EffectLayout;
   scale?: number;
   className?: string;
-}) {
+};
+
+/**
+ * Each effect gets its own canvas and state: a canvas keeps the first kind of
+ * WebGL context it hands out, and the effects use different kinds.
+ */
+export function ShaderWallpaper(props: ShaderWallpaperProps) {
+  return <EffectCanvas key={props.style} {...props} />;
+}
+
+function EffectCanvas({ style, color, animate, layout = HOME_LAYOUT, scale = 1, className }: ShaderWallpaperProps) {
   const { anchor, sides, reach, edgeFade } = layout;
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [renderer, setRenderer] = useState<ShaderRenderer | null>(null);
+  const [renderer, setRenderer] = useState<EffectRenderer | null>(null);
   const [unsupported, setUnsupported] = useState(false);
   // A random start keeps each window's field from looking identical.
   const epoch = useRef(performance.now() - Math.random() * 600_000);
@@ -72,7 +65,7 @@ export function ShaderWallpaper({
 
   useEffect(() => {
     const canvas = canvasRef.current!;
-    const next = createShaderRenderer(canvas, style, CELL[style] * scale, { anchor, sides, reach, edgeFade });
+    const next = EFFECTS[style](canvas, { layout: { anchor, sides, reach, edgeFade }, scale });
     if (!next) {
       setUnsupported(true);
       return;
@@ -90,7 +83,7 @@ export function ShaderWallpaper({
 
   // `name` changes with the palette, which can change what `color` resolves to.
   useEffect(() => {
-    if (renderer) renderer.setColors({ color: computedRgb(canvasRef.current!), ...TONES[mode] });
+    if (renderer) renderer.setColors({ color: computedRgb(canvasRef.current!), alpha: ALPHA[mode], mode });
   }, [renderer, color, mode, name]);
 
   useEffect(() => {
