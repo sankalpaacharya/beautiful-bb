@@ -8,6 +8,7 @@ rail. Changes apply right away. The same settings are also available with
 | Setting | What it does | Default |
 | --- | --- | --- |
 | Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, Catppuccin, GitHub, Solarized, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
+| Appearance | System, Light, or Dark for every theme. Switches bb's own Settings → Appearance mode, so the two always agree. Not part of `bb plugin config` | System |
 | Font | Theme default, bb's bundled Inter, or any Google Fonts family, from a searchable dropdown that previews each font | Theme default |
 | Text size | Slider from 85% to 140% that scales the active theme's own text sizes; 100% leaves them as the theme sets them | 100% |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
@@ -21,7 +22,7 @@ rail. Changes apply right away. The same settings are also available with
 | Wallpaper color | Theme accent (follows the active theme), Teal, Indigo, Amber, Rose, or Neutral, for the wallpaper and the rail | Theme accent |
 | Animate wallpaper | The wallpaper and the rail move slowly; reduced motion keeps them still | On |
 
-Command menu (Cmd+Shift+P): **Beautiful bb: Toggle focus mode**, **Next theme**.
+Command menu (Cmd+Shift+P): **Beautiful bb: Toggle focus mode**, **Next theme**, **Toggle light and dark**.
 
 Themes can also be picked in Settings → Appearance. Each comes with matching code colors for diffs and code blocks.
 
