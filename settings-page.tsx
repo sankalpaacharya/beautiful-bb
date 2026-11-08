@@ -21,8 +21,22 @@ const THEMES = [
     description: "bb's own palette, no plugin theme",
     accent: "#a1a1aa",
     swatches: ["#0f0f10", "#e4e4e7", "#a1a1aa", "#52525b"],
+    lightAccent: "#52525b",
+    lightSwatches: ["#ffffff", "#27272a", "#71717a", "#a1a1aa"],
   },
 ];
+
+/** Whether bb shows its dark mode, following the class bb sets on <html>. */
+function useDarkMode(): boolean {
+  const read = () => document.documentElement.classList.contains("dark");
+  const [dark, setDark] = useState(read);
+  useEffect(() => {
+    const observer = new MutationObserver(() => setDark(read()));
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => observer.disconnect();
+  }, []);
+  return dark;
+}
 
 type ThemeOption = (typeof THEMES)[number];
 
@@ -34,10 +48,18 @@ function Check() {
   );
 }
 
-/** A thumbnail of bb in the theme's colors: sidebar, a few lines of text and code, and the composer. */
+/** A thumbnail of bb in the theme's colors for the current mode: sidebar, a few lines of text and code, and the composer. */
 function ThemePreview({ theme }: { theme: ThemeOption }) {
-  const [background, , code1, code2] = theme.swatches;
-  const vars = { "--t-bg": background, "--t-accent": theme.accent, "--t-code1": code1, "--t-code2": code2 } as CSSProperties;
+  const dark = useDarkMode();
+  const [background, , code1, code2] = dark ? theme.swatches : theme.lightSwatches;
+  const accent = dark ? theme.accent : theme.lightAccent;
+  const vars = {
+    "--t-bg": background,
+    "--t-ink": dark ? "#fff" : "#000",
+    "--t-accent": accent,
+    "--t-code1": code1,
+    "--t-code2": code2,
+  } as CSSProperties;
   return (
     <span className="bbs-art bbs-theme-art" style={vars} aria-hidden="true">
       <span className="bbs-mock-side">

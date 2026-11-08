@@ -5,6 +5,8 @@ type PackTheme = {
   description: string;
   accent: string;
   swatches: readonly string[];
+  lightAccent: string;
+  lightSwatches: readonly string[];
 };
 
 export const THEME_PACK = [
@@ -16,6 +18,13 @@ export const THEME_PACK = [
     "swatches": [
       "#0a0a0a",
       "#b9a5f0",
+      "#7aa2f7",
+      "#34d399"
+    ],
+    "lightAccent": "oklch(0.55 0.17 295)",
+    "lightSwatches": [
+      "#fcfcfc",
+      "oklch(0.55 0.17 295)",
       "#7aa2f7",
       "#34d399"
     ]
@@ -30,6 +39,13 @@ export const THEME_PACK = [
       "#7aa2f7",
       "#bb9af7",
       "#9ece6a"
+    ],
+    "lightAccent": "#2e7de9",
+    "lightSwatches": [
+      "#f9fafe",
+      "#2e7de9",
+      "#bb9af7",
+      "#9ece6a"
     ]
   },
   {
@@ -40,6 +56,13 @@ export const THEME_PACK = [
     "swatches": [
       "#0d0d10",
       "#c4a7e7",
+      "#ebbcba",
+      "#f6c177"
+    ],
+    "lightAccent": "#907aa9",
+    "lightSwatches": [
+      "#fdf9f6",
+      "#907aa9",
       "#ebbcba",
       "#f6c177"
     ]
@@ -54,6 +77,13 @@ export const THEME_PACK = [
       "#7e9cd8",
       "#957fb8",
       "#e6c384"
+    ],
+    "lightAccent": "#4d699b",
+    "lightSwatches": [
+      "#fbfaf6",
+      "#4d699b",
+      "#957fb8",
+      "#e6c384"
     ]
   },
   {
@@ -64,6 +94,13 @@ export const THEME_PACK = [
     "swatches": [
       "#0a0e10",
       "#a7c080",
+      "#83c092",
+      "#dbbc7f"
+    ],
+    "lightAccent": "#8da101",
+    "lightSwatches": [
+      "#fcfaf6",
+      "#8da101",
       "#83c092",
       "#dbbc7f"
     ]
@@ -78,6 +115,13 @@ export const THEME_PACK = [
       "#ffc799",
       "#99ffe4",
       "#a0a0a0"
+    ],
+    "lightAccent": "#c56f2a",
+    "lightSwatches": [
+      "#fcfcfc",
+      "#c56f2a",
+      "#99ffe4",
+      "#a0a0a0"
     ]
   },
   {
@@ -90,6 +134,70 @@ export const THEME_PACK = [
       "#5de4c7",
       "#89ddff",
       "#fcc5e9"
+    ],
+    "lightAccent": "#1f9e85",
+    "lightSwatches": [
+      "#fcfcfc",
+      "#1f9e85",
+      "#89ddff",
+      "#fcc5e9"
+    ]
+  },
+  {
+    "id": "catppuccin",
+    "name": "Catppuccin",
+    "description": "Soothing pastels: Latte by day, Mocha by night",
+    "accent": "#cba6f7",
+    "swatches": [
+      "#0d0d11",
+      "#cba6f7",
+      "#89b4fa",
+      "#a6e3a1"
+    ],
+    "lightAccent": "#8839ef",
+    "lightSwatches": [
+      "#f8fafe",
+      "#8839ef",
+      "#1e66f5",
+      "#40a02b"
+    ]
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "description": "GitHub's own light and dark default themes",
+    "accent": "#2f81f7",
+    "swatches": [
+      "#0b0d11",
+      "#2f81f7",
+      "#a371f7",
+      "#3fb950"
+    ],
+    "lightAccent": "#0969da",
+    "lightSwatches": [
+      "#fafafa",
+      "#0969da",
+      "#8250df",
+      "#1a7f37"
+    ]
+  },
+  {
+    "id": "solarized",
+    "name": "Solarized",
+    "description": "Ethan Schoonover's precision colors on warm paper or deep teal",
+    "accent": "#268bd2",
+    "swatches": [
+      "#0a0e10",
+      "#268bd2",
+      "#2aa198",
+      "#b58900"
+    ],
+    "lightAccent": "#268bd2",
+    "lightSwatches": [
+      "#fcfaf6",
+      "#268bd2",
+      "#2aa198",
+      "#b58900"
     ]
   }
 ] as const satisfies readonly PackTheme[];

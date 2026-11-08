@@ -223,7 +223,7 @@
   display: block;
   height: 3px;
   border-radius: 2px;
-  background: color-mix(in srgb, var(--t-bg), #fff 22%);
+  background: color-mix(in srgb, var(--t-bg), var(--t-ink) 22%);
 }
 .bbs-mock-side {
   display: flex;
@@ -232,11 +232,11 @@
   width: 30%;
   padding: 12% 6%;
   box-sizing: border-box;
-  background: color-mix(in srgb, var(--t-bg), #fff 4%);
+  background: color-mix(in srgb, var(--t-bg), var(--t-ink) 4%);
 }
 .bbs-mock-side i {
   width: 85%;
-  background: color-mix(in srgb, var(--t-bg), #fff 14%);
+  background: color-mix(in srgb, var(--t-bg), var(--t-ink) 14%);
 }
 .bbs-mock-side i[data-on] {
   background: var(--t-accent);
@@ -273,7 +273,7 @@
   height: 26%;
   margin-top: auto;
   padding: 0 4px;
-  border: 1px solid color-mix(in srgb, var(--t-bg), #fff 12%);
+  border: 1px solid color-mix(in srgb, var(--t-bg), var(--t-ink) 12%);
   border-radius: 4px;
 }
 .bbs-theme-art .bbs-mock-composer i {

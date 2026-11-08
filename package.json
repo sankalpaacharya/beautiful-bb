@@ -93,6 +93,36 @@
           "dark": "poimandres",
           "light": "github-light-default"
         }
+      },
+      {
+        "id": "catppuccin",
+        "name": "Catppuccin",
+        "description": "Soothing pastels: Latte by day, Mocha by night",
+        "css": "./themes/catppuccin.css",
+        "codeTheme": {
+          "dark": "catppuccin-mocha",
+          "light": "catppuccin-latte"
+        }
+      },
+      {
+        "id": "github",
+        "name": "GitHub",
+        "description": "GitHub's own light and dark default themes",
+        "css": "./themes/github.css",
+        "codeTheme": {
+          "dark": "github-dark-default",
+          "light": "github-light-default"
+        }
+      },
+      {
+        "id": "solarized",
+        "name": "Solarized",
+        "description": "Ethan Schoonover's precision colors on warm paper or deep teal",
+        "css": "./themes/solarized.css",
+        "codeTheme": {
+          "dark": "solarized-dark",
+          "light": "solarized-light"
+        }
       }
     ],
     "app": "./app.tsx"

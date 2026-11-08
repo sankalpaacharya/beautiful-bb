@@ -7,7 +7,7 @@ rail. Changes apply right away. The same settings are also available with
 
 | Setting | What it does | Default |
 | --- | --- | --- |
-| Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
+| Theme | T3 Night, Tokyo Night, Rosé Pine, Kanagawa, Everforest, Vesper, Poimandres, Catppuccin, GitHub, Solarized, or bb default. One accent colors everything: buttons, links, focus rings, sidebar status, code, and the plugin's own pieces | Picked on the page |
 | Font | Theme default, bb's bundled Inter, or any Google Fonts family, from a searchable dropdown that previews each font | Theme default |
 | Text size | Slider from 85% to 140% that scales the active theme's own text sizes; 100% leaves them as the theme sets them | 100% |
 | Usage card | Weekly limit and 7-day token bars above the sidebar footer | On |
@@ -27,7 +27,7 @@ Themes can also be picked in Settings → Appearance. Each comes with matching c
 
 ## Themes
 
-Seven themes, built from `scripts/themes.mjs` by `node scripts/build-themes.mjs`:
+Ten themes, built from `scripts/themes.mjs` by `node scripts/build-themes.mjs`. Each has a light and a dark version, and bb's Light, Dark or System appearance picks which one shows. The theme picker previews the version for bb's current mode:
 
 | Theme | Dark | Light | Code colors |
 | --- | --- | --- | --- |
@@ -38,6 +38,9 @@ Seven themes, built from `scripts/themes.mjs` by `node scripts/build-themes.mjs`
 | **Everforest** | Dark | Light | official `everforest-dark` / `everforest-light` |
 | **Vesper** | Peach on near-black | zinc with a peach accent | official `vesper` |
 | **Poimandres** | Mint on blue-gray | zinc with a mint accent | official `poimandres` |
+| **Catppuccin** | Mocha | Latte | official `catppuccin-mocha` / `catppuccin-latte` |
+| **GitHub** | Dark default | Light default | official `github-dark-default` / `github-light-default` |
+| **Solarized** | Dark | Light | official `solarized-dark` / `solarized-light` |
 
 Palettes come from each theme's own VS Code theme file. One accent per theme
 colors bb's buttons, links, focus rings, selection, sidebar status, and the
