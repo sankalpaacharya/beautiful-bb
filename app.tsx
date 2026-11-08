@@ -20,6 +20,7 @@ import { EffectsOverlay } from "./overlay";
 import { HomeGreeting } from "./greeting";
 import { WaveIcon } from "./wave-icon";
 import { nextTheme } from "./actions";
+import { toggleColorMode } from "./color-mode";
 
 const REFRESH_MS = 2 * 60 * 1000;
 const HOUR_MS = 60 * 60 * 1000;
@@ -173,4 +174,5 @@ export default definePluginApp((app) => {
     },
   });
   app.commands.register({ id: "next-theme", title: "Beautiful bb: Next theme", run: nextTheme });
+  app.commands.register({ id: "toggle-color-mode", title: "Beautiful bb: Toggle light and dark", run: toggleColorMode });
 });

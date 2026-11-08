@@ -31,3 +31,8 @@ export function subscribeColorMode(onChange: () => void) {
   window.addEventListener("storage", listener);
   return () => window.removeEventListener("storage", listener);
 }
+
+/** Switches to whichever of light and dark bb isn't showing, System included. */
+export function toggleColorMode() {
+  setColorMode(document.documentElement.classList.contains("dark") ? "light" : "dark");
+}
