@@ -1,6 +1,6 @@
 // The plugin's page in the bb nav rail: one place to switch each Beautiful bb
 // change on or off and to pick the home wallpaper. New features add a row here.
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { useRpc, useSdk } from "@get-bb/plugin-sdk/app";
 import type { Preferences, rpcContract } from "./server";
@@ -8,6 +8,7 @@ import { applyFeatures, toggleFocusMode } from "./features";
 import { applyFontScale } from "./typography";
 import { FontSelect } from "./font-select";
 import { applyTheme, themeSelectionId } from "./actions";
+import { COLOR_MODES, readColorMode, setColorMode, subscribeColorMode } from "./color-mode";
 import { THEME_PACK } from "./theme-pack";
 import { ShaderWallpaper } from "./shader-wallpaper";
 import { SHADER_COLORS, SHADER_COLOR_CSS, WALLPAPERS, type ShaderColorId, type WallpaperId } from "./wallpapers";
@@ -163,6 +164,42 @@ function TextSize({ value, onSave }: { value: number; onSave: (percent: number) 
   );
 }
 
+const ARROW_STEP: Record<string, number> = { ArrowLeft: -1, ArrowUp: -1, ArrowRight: 1, ArrowDown: 1 };
+
+/** bb's own System / Light / Dark setting as a segmented radio group; arrow keys move and pick. */
+function ColorModeControl() {
+  const mode = useSyncExternalStore(subscribeColorMode, readColorMode);
+  const options = useRef<(HTMLButtonElement | null)[]>([]);
+  const onKeyDown = (e: React.KeyboardEvent, i: number) => {
+    const step = ARROW_STEP[e.key];
+    if (!step) return;
+    e.preventDefault();
+    const next = (i + step + COLOR_MODES.length) % COLOR_MODES.length;
+    setColorMode(COLOR_MODES[next]!.id);
+    options.current[next]?.focus();
+  };
+  return (
+    <div className="bbs-segmented" role="radiogroup" aria-label="Appearance">
+      {COLOR_MODES.map((m, i) => (
+        <button
+          key={m.id}
+          ref={(el) => {
+            options.current[i] = el;
+          }}
+          type="button"
+          role="radio"
+          aria-checked={mode === m.id}
+          tabIndex={mode === m.id ? 0 : -1}
+          onClick={() => setColorMode(m.id)}
+          onKeyDown={(e) => onKeyDown(e, i)}
+        >
+          {m.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** The active pack theme id, or "default" when bb's own palette (or another theme) is on. */
 function useActiveTheme() {
   const sdk = useSdk();
@@ -248,6 +285,11 @@ export function SettingsPage() {
             ))}
           </div>
         </Row>
+        <Row
+          title="Appearance"
+          detail="Light or dark for every theme. System follows your Mac. This is bb's own Appearance setting."
+          control={<ColorModeControl />}
+        />
         <Row
           title="Font"
           detail="Interface text, from Google Fonts. Code and the terminal stay monospace."
