@@ -48,11 +48,10 @@ function oklch(color) {
 }
 
 /**
- * The surface ladder every pack theme shares, in OKLCH lightness. Large
- * surfaces stay near-neutral (Linear, Material You, Radix, and Catppuccin's app
- * ports all keep their chroma low) and step by lightness only; the theme's
- * identity lives in its accent and text colors. A ported editor background is
- * often chroma 0.02-0.03, which is what made whole windows read navy or plum.
+ * The surface ladder every pack theme shares, in OKLCH lightness. Each step is
+ * taken from the theme's own background at that background's hue and chroma,
+ * so the whole window reads as the theme the way its editor does; only each
+ * step's distance from `canvas` is used.
  */
 const LADDER = {
   dark: {
@@ -64,30 +63,49 @@ const LADDER = {
     line: { seam: 0.93, hairline: 0.92, border: 0.9, selectedBorder: 0.88, input: 0.87 },
   },
 };
-const MAX_CHROMA = { surface: { dark: 0.008, light: 0.006 }, line: { dark: 0.014, light: 0.012 } };
 
-/** The ladder tinted with a hint of the theme background's hue. */
+/** The ladder stepped from the theme's background. */
 function ladder(bg, dark) {
-  const [, c, h] = oklch(bg);
-  const mode = dark ? "dark" : "light";
-  const tint = (tier, l) => hex([l, Math.min(c, MAX_CHROMA[tier][mode]), h]);
-  const pick = (tier) => Object.fromEntries(Object.entries(LADDER[mode][tier]).map(([k, l]) => [k, tint(tier, l)]));
-  return { ...pick("surface"), ...pick("line") };
+  const [l, c, h] = oklch(bg);
+  const { surface, line } = LADDER[dark ? "dark" : "light"];
+  const pick = (tier) => Object.fromEntries(Object.entries(tier).map(([k, to]) => [k, hex([l + to - surface.canvas, c, h])]));
+  return { ...pick(surface), ...pick(line) };
 }
 
 /**
- * The sidebar in the theme's own sidebar color, so it carries the theme rather
- * than the shared near-neutral ladder. When that color sits closer to the canvas
- * than the ladder's sidebar does, it takes the ladder's lightness so the two
- * panels stay apart. Its selected row and seam step off it as the ladder's
- * muted and seam step off the ladder's sidebar.
+ * The sidebar in the theme's own sidebar color. When that color sits closer to
+ * the background than the ladder's sidebar does, it takes the ladder's step so
+ * the two panels stay apart. Its selected row and seam step off it as the
+ * ladder's muted and seam step off the ladder's sidebar.
  */
-function sidebarTier(color, dark) {
+function sidebarTier(color, bg, dark) {
   const { surface, line } = LADDER[dark ? "dark" : "light"];
   const [l, c, h] = oklch(color);
-  const at = Math.abs(l - surface.canvas) < Math.abs(surface.sidebar - surface.canvas) ? surface.sidebar : l;
+  const canvas = oklch(bg)[0];
+  const gap = surface.sidebar - surface.canvas;
+  const at = Math.abs(l - canvas) < Math.abs(gap) ? canvas + gap : l;
   const step = (to) => hex([at + to - surface.sidebar, c, h]);
   return { sidebar: hex([at, c, h]), sidebarAccent: step(surface.muted), sidebarBorder: step(line.seam) };
+}
+
+/** WCAG contrast ratio of two #rrggbb colors. */
+function contrast(a, b) {
+  const lum = (color) =>
+    [1, 3, 5]
+      .map((i) => {
+        const v = parseInt(color.slice(i, i + 2), 16) / 255;
+        return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+      })
+      .reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0);
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/** The text color moved away from its backgrounds until it reads at 4.5:1 on each. */
+function readable(color, backgrounds, dark) {
+  let [l, c, h] = oklch(color);
+  while (l > 0 && l < 1 && backgrounds.some((bg) => contrast(hex([l, c, h]), bg) < 4.5)) l += dark ? 0.01 : -0.01;
+  return hex([l, c, h]);
 }
 
 // Status tones used by the BB Sidebar plugin's thread list. Its stylesheet
@@ -128,9 +146,10 @@ ${tones(theme.accent.light, theme.accent.dark)}`;
 /** Surfaces from the shared ladder; the sidebar, text, accent, and status colors from the theme itself. */
 function modeVars(p, dark) {
   const s = ladder(p.bg, dark);
-  const sb = sidebarTier(p.sidebar, dark);
+  const sb = sidebarTier(p.sidebar, p.bg, dark);
+  const text = (color) => readable(color, [s.canvas, s.card, s.muted, sb.sidebar, sb.sidebarAccent], dark);
   return `  --canvas: ${s.canvas};
-  --ink: ${p.fg};
+  --ink: ${text(p.fg)};
   --card: ${s.card};
   --popover: ${s.popover};
   --secondary: ${s.muted};
@@ -141,12 +160,12 @@ function modeVars(p, dark) {
   --border-seam: ${s.seam};
   --input: ${s.input};
   --sidebar: ${sb.sidebar};
-  --sidebar-foreground: ${p.fg};
+  --sidebar-foreground: ${text(p.fg)};
   --sidebar-accent: ${sb.sidebarAccent};
   --sidebar-border: ${sb.sidebarBorder};
   --surface-selected: ${s.selected};
   --surface-selected-border: ${s.selectedBorder};
-  --muted-foreground: ${p.muted};
+  --muted-foreground: ${text(p.muted)};
   --primary: ${p.accent};
   --primary-foreground: ${dark ? s.canvas : "#ffffff"};
   --file-accent: ${p.accent};

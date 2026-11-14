@@ -143,6 +143,12 @@ textarea,
 :root,
 .light {
   --canvas: #f8f6fb;
+  --card: #fbf9fe;
+  --popover: #fdfbff;
+  --border: #dcdadf;
+  --border-hairline: #e2e0e5;
+  --border-seam: #e6e4e9;
+  --input: #d2d0d5;
   --ink: #262131;
   --primary: #6b4ca0;
   --primary-foreground: #ffffff;
@@ -176,6 +182,12 @@ textarea,
 
 .dark {
   --canvas: #1d1928;
+  --card: #231f2e;
+  --popover: #292535;
+  --border: #353142;
+  --border-hairline: #302c3c;
+  --border-seam: #2b2737;
+  --input: #383444;
   --ink: #eee9f5;
   --primary: #8d6bc1;
   --primary-foreground: #1d1928;
@@ -192,7 +204,7 @@ textarea,
   --sidebar-border: #292535;
   --surface-selected: #4b3a63;
   --surface-selected-border: #8d6bc1;
-  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
+  --muted-foreground: color-mix(in oklch, var(--ink) 74%, var(--canvas));
   --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
   --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
   --destructive: #d15b78;

@@ -142,24 +142,24 @@ textarea,
 
 :root,
 .light {
-  --canvas: #fcfaf6;
-  --ink: #586e75;
-  --card: #fffdf9;
-  --popover: #fffffb;
-  --secondary: #f2f0ec;
-  --muted: #f2f0ec;
-  --accent: #eeede8;
-  --border: #e1ded5;
-  --border-hairline: #e7e4dc;
-  --border-seam: #ebe8df;
-  --input: #d7d4cc;
+  --canvas: #fdf6e3;
+  --ink: #52686f;
+  --card: #fff9e6;
+  --popover: #fffbe8;
+  --secondary: #f3ecd9;
+  --muted: #f3ecd9;
+  --accent: #f0e9d6;
+  --border: #e1dac7;
+  --border-hairline: #e7e0ce;
+  --border-seam: #ebe4d1;
+  --input: #d7d0be;
   --sidebar: #eee8d5;
-  --sidebar-foreground: #586e75;
+  --sidebar-foreground: #52686f;
   --sidebar-accent: #ebe5d2;
   --sidebar-border: #e2dcca;
-  --surface-selected: #e8e6e2;
-  --surface-selected-border: #dad7cf;
-  --muted-foreground: #657b83;
+  --surface-selected: #e9e2cf;
+  --surface-selected-border: #dad3c1;
+  --muted-foreground: #546a71;
   --primary: #268bd2;
   --primary-foreground: #ffffff;
   --file-accent: #268bd2;
@@ -175,26 +175,26 @@ textarea,
 }
 
 .dark {
-  --canvas: #0a0e10;
-  --ink: #93a1a1;
-  --card: #0f1415;
-  --popover: #14191b;
-  --secondary: #101516;
-  --muted: #101516;
-  --accent: #151a1c;
-  --border: #1d2629;
-  --border-hairline: #182124;
-  --border-seam: #131c1f;
-  --input: #1f282b;
+  --canvas: #002b36;
+  --ink: #9caaaa;
+  --card: #06313d;
+  --popover: #0f3843;
+  --secondary: #08333e;
+  --muted: #08333e;
+  --accent: #103944;
+  --border: #1d4551;
+  --border-hairline: #18404b;
+  --border-seam: #123a46;
+  --input: #204853;
   --sidebar: #073642;
-  --sidebar-foreground: #93a1a1;
+  --sidebar-foreground: #9caaaa;
   --sidebar-accent: #16424e;
   --sidebar-border: #1f4a56;
-  --surface-selected: #121719;
-  --surface-selected-border: #1d2629;
-  --muted-foreground: #839496;
+  --surface-selected: #0b3540;
+  --surface-selected-border: #1d4551;
+  --muted-foreground: #98aaac;
   --primary: #268bd2;
-  --primary-foreground: #0a0e10;
+  --primary-foreground: #002b36;
   --file-accent: #268bd2;
   --bbb-accent: #268bd2;
   --destructive: #dc322f;

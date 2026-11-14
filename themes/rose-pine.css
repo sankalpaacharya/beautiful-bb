@@ -142,24 +142,24 @@ textarea,
 
 :root,
 .light {
-  --canvas: #fdf9f6;
+  --canvas: #faf4ed;
   --ink: #575279;
-  --card: #fffdf9;
-  --popover: #fffffb;
-  --secondary: #f3efec;
-  --muted: #f3efec;
-  --accent: #efece8;
-  --border: #e3ddd6;
-  --border-hairline: #e9e3dd;
-  --border-seam: #ede7e0;
-  --input: #d9d3cc;
-  --sidebar: #f8f3ec;
+  --card: #fdf7f0;
+  --popover: #fff9f2;
+  --secondary: #f0eae3;
+  --muted: #f0eae3;
+  --accent: #ede7e0;
+  --border: #ded8d1;
+  --border-hairline: #e4dfd8;
+  --border-seam: #e8e2db;
+  --input: #d4cec7;
+  --sidebar: #f3eee7;
   --sidebar-foreground: #575279;
-  --sidebar-accent: #f4efe8;
-  --sidebar-border: #ece7e0;
-  --surface-selected: #e9e6e2;
-  --surface-selected-border: #dcd6d0;
-  --muted-foreground: #797593;
+  --sidebar-accent: #efeae3;
+  --sidebar-border: #e7e2db;
+  --surface-selected: #e6e0d9;
+  --surface-selected-border: #d7d1cb;
+  --muted-foreground: #6b6784;
   --primary: #907aa9;
   --primary-foreground: #ffffff;
   --file-accent: #907aa9;
@@ -175,26 +175,26 @@ textarea,
 }
 
 .dark {
-  --canvas: #0d0d10;
+  --canvas: #191724;
   --ink: #e0def4;
-  --card: #131216;
-  --popover: #18181c;
-  --secondary: #141317;
-  --muted: #141317;
-  --accent: #19191d;
-  --border: #24232a;
-  --border-hairline: #1f1e26;
-  --border-seam: #1a1a21;
-  --input: #26252d;
+  --card: #1f1d2a;
+  --popover: #252330;
+  --secondary: #201e2b;
+  --muted: #201e2b;
+  --accent: #262432;
+  --border: #312f3d;
+  --border-hairline: #2c2a38;
+  --border-seam: #272533;
+  --input: #333240;
   --sidebar: #1f1d2e;
   --sidebar-foreground: #e0def4;
   --sidebar-accent: #2a283a;
   --sidebar-border: #312f41;
-  --surface-selected: #161519;
-  --surface-selected-border: #24232a;
-  --muted-foreground: #908caa;
+  --surface-selected: #22202e;
+  --surface-selected-border: #312f3d;
+  --muted-foreground: #938fad;
   --primary: #c4a7e7;
-  --primary-foreground: #0d0d10;
+  --primary-foreground: #191724;
   --file-accent: #c4a7e7;
   --bbb-accent: #c4a7e7;
   --destructive: #eb6f92;

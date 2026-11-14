@@ -149,26 +149,26 @@ textarea,
 }
 
 .dark {
-  --canvas: #0c0d11;
+  --canvas: #1b1e28;
   --ink: #e4f0fb;
-  --card: #111316;
-  --popover: #17181c;
-  --secondary: #121417;
-  --muted: #121417;
-  --accent: #18191d;
-  --border: #21242b;
-  --border-hairline: #1d1f26;
-  --border-seam: #181a21;
-  --input: #24262d;
+  --card: #21242e;
+  --popover: #272a35;
+  --secondary: #22252f;
+  --muted: #22252f;
+  --accent: #282b36;
+  --border: #333742;
+  --border-hairline: #2e323c;
+  --border-seam: #292d37;
+  --input: #363944;
   --sidebar: #171922;
   --sidebar-foreground: #e4f0fb;
   --sidebar-accent: #21242d;
   --sidebar-border: #292b35;
-  --surface-selected: #15161a;
-  --surface-selected-border: #21242b;
+  --surface-selected: #242832;
+  --surface-selected-border: #333742;
   --muted-foreground: #a6accd;
   --primary: #5de4c7;
-  --primary-foreground: #0c0d11;
+  --primary-foreground: #1b1e28;
   --file-accent: #5de4c7;
   --bbb-accent: #5de4c7;
   --destructive: #d0679d;
