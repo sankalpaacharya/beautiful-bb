@@ -1,0 +1,65 @@
+/* Iris — quiet violet surfaces with lavender focus and readable contrast. */
+:root,
+.light {
+  --canvas: #f8f6fb;
+  --ink: #262131;
+  --primary: #6b4ca0;
+  --primary-foreground: #ffffff;
+  --secondary: #eee9f5;
+  --accent: #e8e0f3;
+  --muted: #eee9f5;
+  --surface-raised: #f0ebf6;
+  --state-hover: #e9e1f3;
+  --state-active: #ddd0ef;
+  --sidebar-accent: #e5d8f2;
+  --surface-selected: #ded0f0;
+  --surface-selected-border: #a98acf;
+  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
+  --destructive: #b24662;
+  --destructive-foreground: #ffffff;
+  --destructive-text: #962e4a;
+  --warning: #b86c17;
+  --warning-text: #854a0b;
+  --attention: #ce8a28;
+  --success: #367a5c;
+  --diff-added: #397b60;
+  --diff-removed: #b24662;
+  --pr-merged: #7656ac;
+  --file-accent: #6b4ca0;
+  --radius: 0.7rem;
+}
+
+.dark {
+  --canvas: #1d1928;
+  --ink: #eee9f5;
+  --primary: #8d6bc1;
+  --primary-foreground: #1d1928;
+  /* Deliberately violet-tinted interaction surfaces, not neutral charcoal. */
+  --secondary: #3e3055;
+  --accent: #49385f;
+  /* User prompt bubbles and active-thread rows use this muted surface. */
+  --muted: #513e6c;
+  --surface-raised: #30293c;
+  --state-hover: #332a43;
+  --state-active: #433356;
+  --sidebar-accent: #47365d;
+  --surface-selected: #4b3a63;
+  --surface-selected-border: #8d6bc1;
+  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
+  --destructive: #d15b78;
+  --destructive-foreground: #1d1928;
+  --destructive-text: #ec91a5;
+  --warning: #df963d;
+  --warning-text: #f1bc75;
+  --attention: #e6a652;
+  --success: #61b88b;
+  --diff-added: #67ba91;
+  --diff-removed: #e57791;
+  --pr-merged: #ad89df;
+  --file-accent: #a987dd;
+  --radius: 0.7rem;
+}

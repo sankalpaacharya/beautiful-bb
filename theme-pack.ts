@@ -199,5 +199,24 @@ export const THEME_PACK = [
       "#2aa198",
       "#b58900"
     ]
+  },
+  {
+    "id": "iris",
+    "name": "Iris",
+    "description": "Quiet violet surfaces with lavender focus and readable contrast",
+    "accent": "#8d6bc1",
+    "swatches": [
+      "#1d1928",
+      "#8d6bc1",
+      "#ad89df",
+      "#61b88b"
+    ],
+    "lightAccent": "#6b4ca0",
+    "lightSwatches": [
+      "#f8f6fb",
+      "#6b4ca0",
+      "#7656ac",
+      "#367a5c"
+    ]
   }
 ] as const satisfies readonly PackTheme[];
