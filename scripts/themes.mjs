@@ -109,4 +109,15 @@ export const THEMES = [
     swatches: ["#002b36", "#268bd2", "#2aa198", "#b58900"],
     lightSwatches: ["#fdf6e3", "#268bd2", "#2aa198", "#b58900"],
   },
+  {
+    id: "iris",
+    name: "Iris",
+    description: "Quiet violet surfaces with lavender focus and readable contrast",
+    // Hand-authored palette, used verbatim instead of the generated surface ladder.
+    palette: "iris.src.css",
+    accent: { light: "#6b4ca0", dark: "#8d6bc1" },
+    code: { dark: "rose-pine", light: "rose-pine-dawn" },
+    swatches: ["#1d1928", "#8d6bc1", "#ad89df", "#61b88b"],
+    lightSwatches: ["#f8f6fb", "#6b4ca0", "#7656ac", "#367a5c"],
+  },
 ];

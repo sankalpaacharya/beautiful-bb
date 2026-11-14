@@ -1,0 +1,217 @@
+/* T3 Night: the T3 Code look for bb, ported from pingdotgg/t3code apps/web/src/index.css.
+   Source file: run `node scripts/build-themes.mjs` to write themes/t3-night.css.
+   Zinc light surfaces, near-black neutral dark, indigo accent, system fonts. */
+
+:root,
+.light {
+  /* Typography: T3 Code uses the native system UI stack and ui-monospace. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-terminal: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 0.625rem;
+
+  /* Anchors: zinc-25 canvas, zinc-800 ink. */
+  --canvas: oklch(0.992 0 0);
+  --ink: #27272a;
+
+  /* Indigo accent. */
+  --primary: oklch(0.488 0.217 264);
+  --primary-foreground: #ffffff;
+
+  /* Surfaces, matched to T3's zinc scale. */
+  --card: #ffffff;
+  --popover: #ffffff;
+  --secondary: #fafafa;
+  --muted: #fafafa;
+  --accent: #f4f4f5;
+  --border: #e4e4e7;
+  --border-hairline: #e4e4e7;
+  --border-seam: #e4e4e7;
+  --input: #d4d4d8;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #27272a;
+  --sidebar-accent: #f4f4f5;
+  --sidebar-border: #e4e4e7;
+  /* T3 selects rows with a neutral lift, not an accent tint. */
+  --surface-selected: #ffffff;
+  --surface-selected-border: #e4e4e7;
+
+  /* Text tiers: zinc-500 for secondary text. */
+  --muted-foreground: #71717a;
+  --subtle-foreground: color-mix(in oklch, var(--ink) 55%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 62%, var(--canvas));
+
+  /* Semantic. */
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --destructive-text: #b91c1c;
+  --warning: #f59e0b;
+  --warning-text: #b45309;
+  --attention: #f59e0b;
+  --success: #10b981;
+  --diff-added: #10b981;
+  --diff-removed: #ef4444;
+  --pr-merged: #8b5cf6;
+  --file-accent: oklch(0.488 0.217 264);
+}
+
+.dark {
+  /* Anchors: neutral-950 canvas, neutral-100 ink. */
+  --canvas: #0a0a0a;
+  --ink: #f5f5f5;
+
+  --primary: oklch(0.571 0.21 264);
+  --primary-foreground: #ffffff;
+
+  /* Floating surfaces stay close to black; separation comes from faint white borders. */
+  --card: color-mix(in srgb, #0a0a0a 97%, #ffffff);
+  --popover: color-mix(in srgb, #0a0a0a 97%, #ffffff);
+  --secondary: rgb(255 255 255 / 3%);
+  --muted: rgb(255 255 255 / 3%);
+  --accent: rgb(255 255 255 / 4%);
+  --border: rgb(255 255 255 / 6%);
+  --border-hairline: rgb(255 255 255 / 6%);
+  --border-seam: rgb(255 255 255 / 6%);
+  --input: rgb(255 255 255 / 8%);
+  --sidebar: color-mix(in srgb, #0a0a0a 97%, #ffffff);
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-accent: rgb(255 255 255 / 4%);
+  --sidebar-border: rgb(255 255 255 / 6%);
+  --surface-selected: rgb(255 255 255 / 5%);
+  --surface-selected-border: rgb(255 255 255 / 8%);
+
+  --muted-foreground: color-mix(in srgb, #737373 90%, #ffffff);
+
+  --destructive: color-mix(in srgb, #ef4444 90%, #ffffff);
+  --destructive-text: #f87171;
+  --warning: #f59e0b;
+  --warning-text: #fbbf24;
+  --attention: #fbbf24;
+  --success: #34d399;
+  --diff-added: #34d399;
+  --diff-removed: #f87171;
+  --pr-merged: #a78bfa;
+  --file-accent: #8ea2ff;
+}
+
+/* Larger type: each step of bb's desktop scale grows ~1px; spacing is untouched.
+   Touch screens keep bb's own mobile scale. */
+@media (pointer: fine) {
+  :root {
+    --text-2xs: 0.6875rem;
+    --text-2xs--line-height: 0.9375rem;
+    --text-xs: 0.8125rem;
+    --text-xs--line-height: 1.125rem;
+    --text-sm: 0.875rem;
+    --text-sm--line-height: 1.375rem;
+    --text-base: 1rem;
+    --text-base--line-height: 1.5rem;
+    --text-lg: 1.1875rem;
+    --text-lg--line-height: 1.625rem;
+    --text-xl: 1.3125rem;
+    --text-xl--line-height: 1.75rem;
+    --text-2xl: 1.625rem;
+    --text-2xl--line-height: 2rem;
+  }
+}
+
+/* Polish: crisp macOS text, indigo selection and caret, slim scrollbars. */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--primary) 32%, transparent);
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: var(--primary);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--ink) 18%, transparent) transparent;
+}
+
+
+/* Iris: Quiet violet surfaces with lavender focus and readable contrast. Generated from scripts/themes.mjs. */
+/* Iris — quiet violet surfaces with lavender focus and readable contrast. */
+:root,
+.light {
+  --canvas: #f8f6fb;
+  --ink: #262131;
+  --primary: #6b4ca0;
+  --primary-foreground: #ffffff;
+  --secondary: #eee9f5;
+  --accent: #e8e0f3;
+  --muted: #eee9f5;
+  --surface-raised: #f0ebf6;
+  --state-hover: #e9e1f3;
+  --state-active: #ddd0ef;
+  --sidebar-accent: #e5d8f2;
+  --surface-selected: #ded0f0;
+  --surface-selected-border: #a98acf;
+  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
+  --destructive: #b24662;
+  --destructive-foreground: #ffffff;
+  --destructive-text: #962e4a;
+  --warning: #b86c17;
+  --warning-text: #854a0b;
+  --attention: #ce8a28;
+  --success: #367a5c;
+  --diff-added: #397b60;
+  --diff-removed: #b24662;
+  --pr-merged: #7656ac;
+  --file-accent: #6b4ca0;
+  --radius: 0.7rem;
+}
+
+.dark {
+  --canvas: #1d1928;
+  --ink: #eee9f5;
+  --primary: #8d6bc1;
+  --primary-foreground: #1d1928;
+  /* Deliberately violet-tinted interaction surfaces, not neutral charcoal. */
+  --secondary: #3e3055;
+  --accent: #49385f;
+  /* User prompt bubbles and active-thread rows use this muted surface. */
+  --muted: #513e6c;
+  --surface-raised: #30293c;
+  --state-hover: #332a43;
+  --state-active: #433356;
+  --sidebar-accent: #47365d;
+  --surface-selected: #4b3a63;
+  --surface-selected-border: #8d6bc1;
+  --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
+  --subtle-foreground: color-mix(in oklch, var(--ink) 58%, var(--canvas));
+  --readback-foreground: color-mix(in oklch, var(--ink) 64%, var(--canvas));
+  --destructive: #d15b78;
+  --destructive-foreground: #1d1928;
+  --destructive-text: #ec91a5;
+  --warning: #df963d;
+  --warning-text: #f1bc75;
+  --attention: #e6a652;
+  --success: #61b88b;
+  --diff-added: #67ba91;
+  --diff-removed: #e57791;
+  --pr-merged: #ad89df;
+  --file-accent: #a987dd;
+  --radius: 0.7rem;
+}
+
+html:not(.dark),
+html .light {
+  --bb-sidebar-tone-working: #6b4ca0;
+  --bb-sidebar-tone-pending: #6b4ca0;
+}
+html.dark,
+html .dark {
+  --bb-sidebar-tone-working: #8d6bc1;
+  --bb-sidebar-tone-pending: #8d6bc1;
+}

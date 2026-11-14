@@ -123,6 +123,16 @@
           "dark": "solarized-dark",
           "light": "solarized-light"
         }
+      },
+      {
+        "id": "iris",
+        "name": "Iris",
+        "description": "Quiet violet surfaces with lavender focus and readable contrast",
+        "css": "./themes/iris.css",
+        "codeTheme": {
+          "dark": "rose-pine",
+          "light": "rose-pine-dawn"
+        }
       }
     ],
     "app": "./app.tsx"

@@ -148,6 +148,10 @@ function modeVars(p, dark) {
 
 function paletteCss(theme) {
   if (theme.base) return accentCss(theme);
+  // Hand-authored palette (verbatim CSS variables) instead of the generated ladder.
+  if (theme.palette) {
+    return readFileSync(join(root, "themes", theme.palette), "utf8") + tones(theme.accent.light, theme.accent.dark);
+  }
   const { dark, light } = theme;
   // Light first: ":root" also matches in dark mode, so the .dark block must
   // come after it to win, as in the base stylesheet.
@@ -244,13 +248,14 @@ writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
 const T3_LIGHT_CANVAS = "#fcfcfc";
 
 const lightAccentOf = (t) =>
-  t.base ? t.accent.light : t.light === null ? t.lightAccent : t.light.accent;
+  t.base || t.palette ? t.accent.light : t.light === null ? t.lightAccent : t.light.accent;
 
 /** The preview colors in light mode: the light canvas, the light accent, then the theme's own hues. */
 function lightSwatchesOf(t) {
   const [, , ...hues] = t.lightSwatches ?? t.swatches;
-  const canvas =
-    t.base || t.light === null ? T3_LIGHT_CANVAS : ladder(t.light.bg, false).canvas;
+  const canvas = t.palette
+    ? t.lightSwatches[0]
+    : t.base || t.light === null ? T3_LIGHT_CANVAS : ladder(t.light.bg, false).canvas;
   return [canvas, lightAccentOf(t), ...hues];
 }
 
@@ -263,9 +268,9 @@ writeFileSync(
         id: t.id,
         name: t.name,
         description: t.description,
-        accent: t.base ? t.accent.dark : t.dark.accent,
+        accent: t.base || t.palette ? t.accent.dark : t.dark.accent,
         // The preview's background is the generated canvas, not the editor's.
-        swatches: t.base ? t.swatches : [ladder(t.dark.bg, true).canvas, ...t.swatches.slice(1)],
+        swatches: t.base || t.palette ? t.swatches : [ladder(t.dark.bg, true).canvas, ...t.swatches.slice(1)],
         lightAccent: lightAccentOf(t),
         lightSwatches: lightSwatchesOf(t),
       })),
