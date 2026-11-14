@@ -35,14 +35,14 @@ export const THEME_PACK = [
     "description": "Deep navy with neon blues and purples, by enkia",
     "accent": "#7aa2f7",
     "swatches": [
-      "#0c0d11",
+      "#1a1b26",
       "#7aa2f7",
       "#bb9af7",
       "#9ece6a"
     ],
     "lightAccent": "#2e7de9",
     "lightSwatches": [
-      "#f9fafe",
+      "#e1e2e7",
       "#2e7de9",
       "#bb9af7",
       "#9ece6a"
@@ -54,14 +54,14 @@ export const THEME_PACK = [
     "description": "Soho vibes: muted plum with rose, iris, and gold",
     "accent": "#c4a7e7",
     "swatches": [
-      "#0d0d10",
+      "#191724",
       "#c4a7e7",
       "#ebbcba",
       "#f6c177"
     ],
     "lightAccent": "#907aa9",
     "lightSwatches": [
-      "#fdf9f6",
+      "#faf4ed",
       "#907aa9",
       "#ebbcba",
       "#f6c177"
@@ -73,14 +73,14 @@ export const THEME_PACK = [
     "description": "Inspired by Hokusai's Great Wave: ink, wave blue, and old paper",
     "accent": "#7e9cd8",
     "swatches": [
-      "#0d0d11",
+      "#1f1f28",
       "#7e9cd8",
       "#957fb8",
       "#e6c384"
     ],
     "lightAccent": "#4d699b",
     "lightSwatches": [
-      "#fbfaf6",
+      "#f2ecbc",
       "#4d699b",
       "#957fb8",
       "#e6c384"
@@ -92,14 +92,14 @@ export const THEME_PACK = [
     "description": "Soft forest greens that are easy on the eyes",
     "accent": "#a7c080",
     "swatches": [
-      "#0a0e10",
+      "#2d353b",
       "#a7c080",
       "#83c092",
       "#dbbc7f"
     ],
     "lightAccent": "#8da101",
     "lightSwatches": [
-      "#fcfaf6",
+      "#fdf6e3",
       "#8da101",
       "#83c092",
       "#dbbc7f"
@@ -111,7 +111,7 @@ export const THEME_PACK = [
     "description": "Minimal near-black with a warm peach accent, by Rauno Freiberg",
     "accent": "#ffc799",
     "swatches": [
-      "#0d0d0d",
+      "#101010",
       "#ffc799",
       "#99ffe4",
       "#a0a0a0"
@@ -130,7 +130,7 @@ export const THEME_PACK = [
     "description": "Cool blue-gray with mint and sky highlights",
     "accent": "#5de4c7",
     "swatches": [
-      "#0c0d11",
+      "#1b1e28",
       "#5de4c7",
       "#89ddff",
       "#fcc5e9"
@@ -149,14 +149,14 @@ export const THEME_PACK = [
     "description": "Soothing pastels: Latte by day, Mocha by night",
     "accent": "#cba6f7",
     "swatches": [
-      "#0d0d11",
+      "#1e1e2e",
       "#cba6f7",
       "#89b4fa",
       "#a6e3a1"
     ],
     "lightAccent": "#8839ef",
     "lightSwatches": [
-      "#f8fafe",
+      "#eff1f5",
       "#8839ef",
       "#1e66f5",
       "#40a02b"
@@ -168,14 +168,14 @@ export const THEME_PACK = [
     "description": "GitHub's own light and dark default themes",
     "accent": "#2f81f7",
     "swatches": [
-      "#0b0d11",
+      "#0d1117",
       "#2f81f7",
       "#a371f7",
       "#3fb950"
     ],
     "lightAccent": "#0969da",
     "lightSwatches": [
-      "#fafafa",
+      "#ffffff",
       "#0969da",
       "#8250df",
       "#1a7f37"
@@ -187,14 +187,14 @@ export const THEME_PACK = [
     "description": "Ethan Schoonover's precision colors on warm paper or deep teal",
     "accent": "#268bd2",
     "swatches": [
-      "#0a0e10",
+      "#002b36",
       "#268bd2",
       "#2aa198",
       "#b58900"
     ],
     "lightAccent": "#268bd2",
     "lightSwatches": [
-      "#fcfaf6",
+      "#fdf6e3",
       "#268bd2",
       "#2aa198",
       "#b58900"
