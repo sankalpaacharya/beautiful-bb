@@ -152,7 +152,9 @@ textarea,
   --surface-raised: #f0ebf6;
   --state-hover: #e9e1f3;
   --state-active: #ddd0ef;
+  --sidebar: #f1edf7;
   --sidebar-accent: #e5d8f2;
+  --sidebar-border: #e4dcee;
   --surface-selected: #ded0f0;
   --surface-selected-border: #a98acf;
   --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));
@@ -185,7 +187,9 @@ textarea,
   --surface-raised: #30293c;
   --state-hover: #332a43;
   --state-active: #433356;
+  --sidebar: #181423;
   --sidebar-accent: #47365d;
+  --sidebar-border: #292535;
   --surface-selected: #4b3a63;
   --surface-selected-border: #8d6bc1;
   --muted-foreground: color-mix(in oklch, var(--ink) 70%, var(--canvas));

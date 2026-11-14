@@ -153,10 +153,10 @@ textarea,
   --border-hairline: #e7e4dc;
   --border-seam: #ebe8df;
   --input: #d7d4cc;
-  --sidebar: #f5f3ef;
+  --sidebar: #eee8d5;
   --sidebar-foreground: #586e75;
-  --sidebar-accent: #f2f0ec;
-  --sidebar-border: #ebe8df;
+  --sidebar-accent: #ebe5d2;
+  --sidebar-border: #e2dcca;
   --surface-selected: #e8e6e2;
   --surface-selected-border: #dad7cf;
   --muted-foreground: #657b83;
@@ -186,10 +186,10 @@ textarea,
   --border-hairline: #182124;
   --border-seam: #131c1f;
   --input: #1f282b;
-  --sidebar: #070b0c;
+  --sidebar: #073642;
   --sidebar-foreground: #93a1a1;
-  --sidebar-accent: #101516;
-  --sidebar-border: #131c1f;
+  --sidebar-accent: #16424e;
+  --sidebar-border: #1f4a56;
   --surface-selected: #121719;
   --surface-selected-border: #1d2629;
   --muted-foreground: #839496;

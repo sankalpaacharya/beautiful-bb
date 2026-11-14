@@ -75,6 +75,21 @@ function ladder(bg, dark) {
   return { ...pick("surface"), ...pick("line") };
 }
 
+/**
+ * The sidebar in the theme's own sidebar color, so it carries the theme rather
+ * than the shared near-neutral ladder. When that color sits closer to the canvas
+ * than the ladder's sidebar does, it takes the ladder's lightness so the two
+ * panels stay apart. Its selected row and seam step off it as the ladder's
+ * muted and seam step off the ladder's sidebar.
+ */
+function sidebarTier(color, dark) {
+  const { surface, line } = LADDER[dark ? "dark" : "light"];
+  const [l, c, h] = oklch(color);
+  const at = Math.abs(l - surface.canvas) < Math.abs(surface.sidebar - surface.canvas) ? surface.sidebar : l;
+  const step = (to) => hex([at + to - surface.sidebar, c, h]);
+  return { sidebar: hex([at, c, h]), sidebarAccent: step(surface.muted), sidebarBorder: step(line.seam) };
+}
+
 // Status tones used by the BB Sidebar plugin's thread list. Its stylesheet
 // loads after the theme with the same selectors, so these use html-qualified
 // selectors to win.
@@ -110,9 +125,10 @@ function accentCss(theme) {
 ${tones(theme.accent.light, theme.accent.dark)}`;
 }
 
-/** Surfaces from the shared ladder; text, accent, and status colors from the theme itself. */
+/** Surfaces from the shared ladder; the sidebar, text, accent, and status colors from the theme itself. */
 function modeVars(p, dark) {
   const s = ladder(p.bg, dark);
+  const sb = sidebarTier(p.sidebar, dark);
   return `  --canvas: ${s.canvas};
   --ink: ${p.fg};
   --card: ${s.card};
@@ -124,10 +140,10 @@ function modeVars(p, dark) {
   --border-hairline: ${s.hairline};
   --border-seam: ${s.seam};
   --input: ${s.input};
-  --sidebar: ${s.sidebar};
+  --sidebar: ${sb.sidebar};
   --sidebar-foreground: ${p.fg};
-  --sidebar-accent: ${s.muted};
-  --sidebar-border: ${s.seam};
+  --sidebar-accent: ${sb.sidebarAccent};
+  --sidebar-border: ${sb.sidebarBorder};
   --surface-selected: ${s.selected};
   --surface-selected-border: ${s.selectedBorder};
   --muted-foreground: ${p.muted};
