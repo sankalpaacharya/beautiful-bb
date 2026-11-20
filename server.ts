@@ -16,7 +16,7 @@ import {
   WALLPAPER_IDS,
 } from "./wallpapers";
 import { dailyTokens, type DailyTokens } from "./tokens";
-import { pooledWeeklyUsage, PROVIDER_NAMES, uniqueWeeklyAccounts, weeklyAccountSchema } from "./usage";
+import { pooledWeeklyUsage, PROVIDER_NAMES, sessionWindow, uniqueWeeklyAccounts, weeklyAccountSchema } from "./usage";
 import { dailyGains, dayBarSchema, dayBars, trackUsage } from "./usage-history";
 import { createSystemSampler, systemStatsSchema, topProcess } from "./system";
 import { prsResultSchema } from "./prs";
@@ -128,7 +128,7 @@ export default async function plugin(bb: BbPluginApi) {
     usageCard: {
       type: "boolean",
       label: "Usage card",
-      description: "Show each account's weekly limit and 7-day activity above the sidebar footer.",
+      description: "Show each account's weekly limit, 5-hour limit where the plan has one, and 7-day activity above the sidebar footer.",
       default: true,
     },
     systemCard: {
@@ -260,6 +260,7 @@ export default async function plugin(bb: BbPluginApi) {
           accountLabel: entry.accountEmail ?? null,
           usedPercent: w.usedPercent,
           resetsAt: w.resetsAt,
+          session: sessionWindow(entry.windows),
         }] : [];
       });
       const now = Date.now();

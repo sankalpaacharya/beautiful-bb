@@ -3,6 +3,13 @@ import { z } from "zod";
 
 export const PROVIDER_NAMES: Record<string, string> = { "claude-code": "Claude", codex: "Codex" };
 
+/** A provider's 5-hour window, on plans that have one. */
+export const sessionWindowSchema = z.object({
+  usedPercent: z.number(),
+  resetsAt: z.string().nullable(),
+});
+export type SessionWindow = z.infer<typeof sessionWindowSchema>;
+
 export const weeklyAccountSchema = z.object({
   id: z.string(),
   providerId: z.string(),
@@ -11,6 +18,7 @@ export const weeklyAccountSchema = z.object({
   accountLabel: z.string().nullable(),
   usedPercent: z.number(),
   resetsAt: z.string(),
+  session: sessionWindowSchema.nullable(),
 });
 export type WeeklyAccount = z.infer<typeof weeklyAccountSchema>;
 
@@ -38,6 +46,12 @@ const measurementSchema = z.object({
     z.object({ status: z.enum(["not_installed", "unauthenticated", "expired", "error"]) }),
   ]),
 });
+
+/** The account-wide 5-hour window, or null when the plan has none. */
+export function sessionWindow(windows: { kind?: unknown; model?: unknown; usedPercent: number; resetsAt: string | null }[]): SessionWindow | null {
+  const window = windows.find((window) => window.kind === "five-hour" && !window.model);
+  return window ? { usedPercent: window.usedPercent, resetsAt: window.resetsAt } : null;
+}
 
 export function uniqueWeeklyAccounts(accounts: WeeklyAccount[]): WeeklyAccount[] {
   const seen = new Set<string>();
@@ -78,6 +92,7 @@ export async function pooledWeeklyUsage(bb: BbPluginApi): Promise<WeeklyAccount[
       accountLabel,
       usedPercent: window.usedPercent,
       resetsAt: window.resetsAt,
+      session: sessionWindow(measurement.usage.windows),
     }];
   }));
   return results.flatMap((result) => {

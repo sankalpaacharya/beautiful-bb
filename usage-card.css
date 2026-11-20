@@ -1,5 +1,6 @@
-/* Weekly usage card. One fixed line per account; hover or keyboard focus only
-   lifts the opacity, nothing resizes. The active theme's accent (lavender in
+/* Weekly usage card. One fixed line per account, plus a 5-hour line where the
+   plan has that limit; hover or keyboard focus only lifts the opacity, nothing
+   resizes. The active theme's accent (lavender in
    T3 Night) colors every day bar so the rows read as a set. Limit bars share
    one value scale with the system card: neutral gray through normal values,
    the theme's warning color near 70%, and its destructive color at 100%. */
@@ -87,6 +88,20 @@ section:has(> div > div > .bbb-card) {
   align-items: center;
   gap: 0.5rem;
   height: 0.875rem;
+}
+
+/* The 5-hour limit sits under its account's row, labelled where the logo is. */
+.bbb-window {
+  width: 0.75rem;
+  font-size: 0.5625rem;
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+.bbb-session {
+  margin-top: -0.125rem;
 }
 
 .bbb-icon {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { pooledWeeklyUsage, uniqueWeeklyAccounts } from "./usage.ts";
+import { pooledWeeklyUsage, sessionWindow, uniqueWeeklyAccounts } from "./usage.ts";
 
 const resource = { id: "second", providerId: "claude-code", label: "Account 2", accountKey: "anthropic:second" };
 const measurement = {
@@ -41,7 +41,17 @@ test("a pooled account shows its overall weekly quota and identity", async () =>
     accountLabel: "second@example.com",
     usedPercent: 23,
     resetsAt: "2026-11-26T00:00:00Z",
+    session: null,
   }]);
+});
+
+test("a plan with a 5-hour limit shows it; per-model and other windows do not", async () => {
+  const fiveHour = { kind: "five-hour", model: null, usedPercent: 41, resetsAt: "2026-11-21T03:00:00Z" };
+  const withSession = { ...measurement, usage: { ...measurement.usage, windows: [...measurement.usage.windows, fiveHour] } };
+  const [row] = await pooledWeeklyUsage(pool({ measure: () => withSession }));
+  assert.deepEqual(row.session, { usedPercent: 41, resetsAt: "2026-11-21T03:00:00Z" });
+  assert.equal(sessionWindow([{ ...fiveHour, model: "opus" }, { ...fiveHour, kind: "daily" }]), null);
+  assert.deepEqual(sessionWindow([{ ...fiveHour, resetsAt: null }]), { usedPercent: 41, resetsAt: null });
 });
 
 test("one account failing to refresh leaves other accounts visible", async () => {

@@ -1,9 +1,10 @@
 // Beautiful bb frontend entry. Registers every piece of the plugin: the PRs
 // card (prs-card.tsx), the system card (live CPU and memory) and the usage card
 // above the sidebar footer (one line per account: logo, weekly limit bar, 7-day
-// activity bars, percent used, time to reset), the home wallpaper and greeting,
+// activity bars, percent used, time to reset; and a 5-hour limit line under it
+// when the plan has one), the home wallpaper and greeting,
 // the settings page, the effects overlay, and command-menu actions.
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   definePluginApp,
   experimental_ProviderIcon as ProviderIcon,
@@ -113,6 +114,31 @@ function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
   );
 }
 
+function SessionRow({ h, now }: { h: HarnessUsage; now: number }) {
+  if (!h.session) return null;
+  const name = h.accountLabel ? `${h.name} — ${h.accountLabel}` : h.name;
+  const resetsAt = h.session.resetsAt ? Date.parse(h.session.resetsAt) : null;
+  const used = Math.min(Math.max(h.session.usedPercent, 0), 100);
+  const resets = resetsAt === null ? "" : `, resets ${dayTime.format(resetsAt)}`;
+  return (
+    <li
+      className="bbb-row bbb-session"
+      title={`${name}, 5-hour limit`}
+      aria-label={`${name}: ${h.session.usedPercent}% of 5-hour limit used${resets}.`}
+    >
+      <span className="bbb-window" aria-hidden="true">5h</span>
+      <span className="bbb-bar" aria-hidden="true">
+        <span style={{ width: `${used}%`, backgroundSize: `${used > 0 ? 10000 / used : 100}% 100%` }} />
+      </span>
+      <span aria-hidden="true" />
+      <span className="bbb-pct">{h.session.usedPercent}%</span>
+      <span className="bbb-in" title={resetsAt === null ? undefined : `Resets ${dayTime.format(resetsAt)}`}>
+        {resetsAt === null ? "" : until(resetsAt - now)}
+      </span>
+    </li>
+  );
+}
+
 const USAGE_KEY = "beautiful-bb:weekly-usage-v3";
 
 /** The last reading, so a restarted plugin server (cold caches, a slow first call) still shows rows. */
@@ -163,9 +189,14 @@ function WeeklyUsageCard() {
     );
   }
   return (
-    <section className="bbb-card" aria-label="Weekly usage limits" tabIndex={0}>
+    <section className="bbb-card" aria-label="Usage limits" tabIndex={0}>
       <ul>
-        {harnesses.map((harness) => <HarnessRow key={harness.id} h={harness} now={now} />)}
+        {harnesses.map((harness) => (
+          <Fragment key={harness.id}>
+            <HarnessRow h={harness} now={now} />
+            <SessionRow h={harness} now={now} />
+          </Fragment>
+        ))}
       </ul>
     </section>
   );
