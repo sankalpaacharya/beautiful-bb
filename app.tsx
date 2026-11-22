@@ -5,7 +5,7 @@
 // weekly one when the account reports one), the home wallpaper and greeting,
 // the settings page, the effects overlay, link previews in messages, and
 // command-menu actions.
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import {
   definePluginApp,
   experimental_ProviderIcon as ProviderIcon,
@@ -29,63 +29,33 @@ import { PrsCard } from "./prs-card";
 import { SystemCard } from "./system-card";
 import { usePreferences } from "./use-preferences";
 import { until } from "./duration";
+import { tipLevel, useUsageTip } from "./usage-tip";
 
 const REFRESH_MS = 2 * 60 * 1000;
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 const dayTime = new Intl.DateTimeFormat(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
 const clock = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
-const weekday = new Intl.DateTimeFormat(undefined, { weekday: "short" });
-const monthDay = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
-const points = new Intl.NumberFormat(undefined, { maximumFractionDigits: 1 });
-
-function formatDay(day: string): string {
-  const [year, month, date] = day.split("-").map(Number);
-  return monthDay.format(new Date(year!, month! - 1, date));
-}
-
-const tokenCount = new Intl.NumberFormat(undefined, { notation: "compact", maximumFractionDigits: 1 });
 
 type DayBar = HarnessUsage["daily"][number];
-
-function describeBar(bar: DayBar, providerName: string): string {
-  if (!bar) return "no reading";
-  if (bar.unit === "percent") return `This account, +${points.format(bar.amount)}% of the weekly limit`;
-  const tokens = `${tokenCount.format(bar.amount)} tokens`;
-  return bar.shared ? `${providerName}-wide activity (no per-account history yet), ${tokens}` : `This account, ${tokens}`;
-}
-
-function describeBars(daily: DayBar[], historySince: string | null, providerName: string): string {
-  if (!daily.some((bar) => bar?.shared)) {
-    const total = daily.reduce((sum, bar) => sum + (bar?.amount ?? 0), 0);
-    return `This account: ${tokenCount.format(total)} tokens in the last 7 days`;
-  }
-  const since = historySince ? `This account's history since ${formatDay(historySince)}. ` : "";
-  return `${since}Fainter bars are ${providerName}-wide activity (no per-account history yet).`;
-}
 
 /**
  * Seven bars of daily activity, today on the right. Weekly-limit growth and
  * token counts are scaled separately, each against its own busiest day.
  */
-function UsageBars({ daily, historySince, providerName, now }: { daily: DayBar[]; historySince: string | null; providerName: string; now: number }) {
+function UsageBars({ daily }: { daily: DayBar[] }) {
   const peak = (unit: string) => Math.max(...daily.map((bar) => (bar?.unit === unit ? bar.amount : 0)), 1);
   const peaks = { percent: peak("percent"), tokens: peak("tokens") };
   return (
-    <span className="bbb-bars" title={describeBars(daily, historySince, providerName)}>
-      {daily.map((bar, i) => {
-        const day = weekday.format(now - (daily.length - 1 - i) * DAY_MS);
-        return (
-          <span
-            key={i}
-            className="bbb-day"
-            data-empty={!bar?.amount || undefined}
-            data-shared={bar?.shared || undefined}
-            style={{ height: `${Math.max(bar ? (bar.amount / peaks[bar.unit]) * 100 : 0, 12)}%` }}
-            title={`${day}: ${describeBar(bar, providerName)}`}
-          />
-        );
-      })}
+    <span className="bbb-bars">
+      {daily.map((bar, i) => (
+        <span
+          key={i}
+          className="bbb-day"
+          data-empty={!bar?.amount || undefined}
+          data-shared={bar?.shared || undefined}
+          style={{ height: `${Math.max(bar ? (bar.amount / peaks[bar.unit]) * 100 : 0, 12)}%` }}
+        />
+      ))}
     </span>
   );
 }
@@ -100,7 +70,30 @@ function LimitBar({ usedPercent }: { usedPercent: number }) {
   );
 }
 
-function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
+/** Lucide clock (ISC). */
+const CLOCK = "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20M12 6v6l4 2";
+
+function TipHead({ icon, title }: { icon: ReactNode; title: string }) {
+  return (
+    <>
+      <span className="bbb-tip-provider">{icon}</span>
+      <span className="bbb-tip-title">{title}</span>
+    </>
+  );
+}
+
+function TipWindow({ label, usedPercent }: { label: string; usedPercent: number }) {
+  return (
+    <>
+      <svg className="bbb-tip-icon" viewBox="0 0 24 24" aria-hidden="true"><path d={CLOCK} /></svg>
+      <span className="bbb-tip-muted">{label}</span>
+      <LimitBar usedPercent={usedPercent} />
+      <span className="bbb-tip-pct" data-level={tipLevel(usedPercent)}>{usedPercent}%</span>
+    </>
+  );
+}
+
+function HarnessRow({ h, now, tip }: { h: HarnessUsage; now: number; tip: ReturnType<typeof useUsageTip> }) {
   const { providers } = useProviders();
   const provider = providers.find((provider) => provider.id === h.providerId) ?? { id: h.providerId };
   const name = h.accountLabel ? `${h.name} — ${h.accountLabel}` : h.name;
@@ -110,10 +103,18 @@ function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
   const limits = five
     ? `Weekly: ${h.usedPercent}% · resets ${dayTime.format(resetsAt)}\n5-hour limit: ${five.usedPercent}% · resets in ${until(fiveResetsAt - now)} (${clock.format(fiveResetsAt)})`
     : null;
+  // The card already shows the weekly numbers; the tip adds the 5-hour window.
+  const fiveTip = five && (
+    <span className="bbb-tip-windows">
+      <TipHead icon={<ProviderIcon providerKind="agent" provider={provider} />} title={h.name} />
+      <TipWindow label="5 hours" usedPercent={five.usedPercent} />
+    </span>
+  );
   return (
     <li
       className="bbb-row"
-      title={limits ? `${name}\n${limits}` : name}
+      onPointerEnter={fiveTip ? (event) => tip.show(event.currentTarget, fiveTip) : undefined}
+      onPointerLeave={tip.hide}
       aria-label={limits
         ? `${name}: ${limits.replace("\n", ", ")}.`
         : `${name}: ${h.usedPercent}% of weekly limit used, resets ${dayTime.format(resetsAt)}.`}
@@ -127,7 +128,7 @@ function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
           <span className="bbb-five-bar"><LimitBar usedPercent={five.usedPercent} /></span>
         </span>
       ) : <LimitBar usedPercent={h.usedPercent} />}
-      <UsageBars daily={h.daily} historySince={h.historySince} providerName={h.name} now={now} />
+      <UsageBars daily={h.daily} />
       <span className="bbb-pct">{h.usedPercent}%</span>
       <span className="bbb-in" title={five ? undefined : `Resets ${dayTime.format(resetsAt)}`}>
         {until(resetsAt - now)}
@@ -177,6 +178,7 @@ function useWeeklyUsage() {
 
 function WeeklyUsageCard() {
   const { harnesses, now } = useWeeklyUsage();
+  const tip = useUsageTip();
   if (harnesses === null) return <div className="bbb-card bbb-loading" aria-busy="true" />;
   if (!harnesses.length) {
     return (
@@ -188,8 +190,9 @@ function WeeklyUsageCard() {
   return (
     <section className="bbb-card" aria-label="Weekly usage limits" tabIndex={0}>
       <ul>
-        {harnesses.map((harness) => <HarnessRow key={harness.id} h={harness} now={now} />)}
+        {harnesses.map((harness) => <HarnessRow key={harness.id} h={harness} now={now} tip={tip} />)}
       </ul>
+      {tip.layer}
     </section>
   );
 }
