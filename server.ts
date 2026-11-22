@@ -16,7 +16,7 @@ import {
   WALLPAPER_IDS,
 } from "./wallpapers";
 import { dailyTokens, type DailyTokens } from "./tokens";
-import { accountLimit, pooledWeeklyUsage, PROVIDER_NAMES, uniqueWeeklyAccounts, weeklyAccountSchema } from "./usage";
+import { accountLimit, planName, pooledWeeklyUsage, PROVIDER_NAMES, uniqueWeeklyAccounts, weeklyAccountSchema } from "./usage";
 import { dailyGains, dayBarSchema, dayBars, trackUsage } from "./usage-history";
 import { createSystemSampler, systemStatsSchema, topProcess } from "./system";
 import { prsResultSchema } from "./prs";
@@ -278,6 +278,7 @@ export default async function plugin(bb: BbPluginApi) {
           name: PROVIDER_NAMES[id] ?? id,
           accountKey: "accountKey" in entry && typeof entry.accountKey === "string" ? entry.accountKey : null,
           accountLabel: entry.accountEmail ?? null,
+          plan: planName(entry.plan, entry.planLabel),
           ...limit,
           fiveHour: accountLimit(entry.windows, "five-hour"),
         }] : [];

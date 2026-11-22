@@ -12,11 +12,14 @@ export const weeklyAccountSchema = z.object({
   name: z.string(),
   accountKey: z.string().nullable(),
   accountLabel: z.string().nullable(),
+  plan: z.string().nullable(),
   usedPercent: z.number(),
   resetsAt: z.string(),
   fiveHour: limitSchema.nullable(),
 });
 export type WeeklyAccount = z.infer<typeof weeklyAccountSchema>;
+
+const planSchema = z.object({ id: z.string(), multiplier: z.number().nullable() });
 
 const resourcesSchema = z.object({
   resources: z.array(z.object({
@@ -32,6 +35,8 @@ const measurementSchema = z.object({
     z.object({
       status: z.literal("ok"),
       accountEmail: z.string().nullable(),
+      plan: z.unknown().optional(),
+      planLabel: z.string().nullable().optional(),
       windows: z.array(z.object({
         kind: z.string(),
         model: z.string().nullable(),
@@ -42,6 +47,19 @@ const measurementSchema = z.object({
     z.object({ status: z.enum(["not_installed", "unauthenticated", "expired", "error"]) }),
   ]),
 });
+
+/**
+ * "Max 20x", "Max 5x", "Plus", "Pro Lite" and so on. The account pool reports Claude's
+ * Max 20x tier as "ultra" and any other Max tier (only 5x today) as "max".
+ */
+export function planName(raw: unknown, label?: string | null): string | null {
+  const plan = planSchema.safeParse(raw).data;
+  if (plan?.id === "ultra") return "Max 20x";
+  if (plan?.multiplier) return `${label ?? plan.id} ${plan.multiplier}x`;
+  if (plan?.id === "max") return "Max 5x";
+  if ((plan?.id ?? label)?.toLowerCase() === "prolite") return "Pro Lite";
+  return label ?? null;
+}
 
 /** The account-wide window of one kind, if it has a reset time; per-model windows carry `model`. */
 export function accountLimit(
@@ -89,6 +107,7 @@ export async function pooledWeeklyUsage(bb: BbPluginApi): Promise<WeeklyAccount[
       name: PROVIDER_NAMES[resource.providerId] ?? resource.providerId,
       accountKey: measurement.accountKey ?? resource.accountKey,
       accountLabel,
+      plan: planName(measurement.usage.plan, measurement.usage.planLabel),
       ...weekly,
       fiveHour: accountLimit(measurement.usage.windows, "five-hour"),
     }];

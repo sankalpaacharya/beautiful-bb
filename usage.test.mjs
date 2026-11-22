@@ -40,6 +40,7 @@ test("a pooled account shows its overall weekly and 5-hour quotas and identity",
     name: "Claude",
     accountKey: "anthropic:second",
     accountLabel: "second@example.com",
+    plan: null,
     usedPercent: 23,
     resetsAt: "2026-11-26T00:00:00Z",
     fiveHour: { usedPercent: 5, resetsAt: "2026-11-21T15:20:00Z" },
@@ -82,4 +83,13 @@ test("identical account keys from different providers are not combined", async (
   const [claude] = await pooledWeeklyUsage(pool());
   const codex = { ...claude, providerId: "codex", id: "codex" };
   assert.deepEqual(uniqueWeeklyAccounts([claude, codex]), [claude, codex]);
+});
+
+test("plans read as their names, with the Max tier", async () => {
+  const withPlan = (plan, planLabel) => ({ ...measurement, usage: { ...measurement.usage, plan, planLabel } });
+  const planOf = async (plan, planLabel) => (await pooledWeeklyUsage(pool({ measure: () => withPlan(plan, planLabel) })))[0].plan;
+  assert.equal(await planOf({ id: "ultra", multiplier: null }, "Ultra"), "Max 20x");
+  assert.equal(await planOf({ id: "max", multiplier: null }, "Max"), "Max 5x");
+  assert.equal(await planOf({ id: "plus", multiplier: null }, "Plus"), "Plus");
+  assert.equal(await planOf(null, null), null);
 });

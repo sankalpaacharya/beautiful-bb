@@ -103,17 +103,18 @@ function HarnessRow({ h, now, tip }: { h: HarnessUsage; now: number; tip: Return
   const limits = five
     ? `Weekly: ${h.usedPercent}% · resets ${dayTime.format(resetsAt)}\n5-hour limit: ${five.usedPercent}% · resets in ${until(fiveResetsAt - now)} (${clock.format(fiveResetsAt)})`
     : null;
-  // The card already shows the weekly numbers; the tip adds the 5-hour window.
-  const fiveTip = five && (
+  // The card already shows the weekly numbers; the tip names the account and
+  // adds the 5-hour window when there is one.
+  const rowTip = (
     <span className="bbb-tip-windows">
-      <TipHead icon={<ProviderIcon providerKind="agent" provider={provider} />} title={h.name} />
-      <TipWindow label="5 hours" usedPercent={five.usedPercent} />
+      <TipHead icon={<ProviderIcon providerKind="agent" provider={provider} />} title={h.plan ? `${h.name} ${h.plan}` : name} />
+      {five && <TipWindow label="5 hours" usedPercent={five.usedPercent} />}
     </span>
   );
   return (
     <li
       className="bbb-row"
-      onPointerEnter={fiveTip ? (event) => tip.show(event.currentTarget, fiveTip) : undefined}
+      onPointerEnter={(event) => tip.show(event.currentTarget, rowTip)}
       onPointerLeave={tip.hide}
       aria-label={limits
         ? `${name}: ${limits.replace("\n", ", ")}.`
