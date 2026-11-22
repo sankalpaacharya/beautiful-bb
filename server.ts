@@ -130,7 +130,7 @@ export default async function plugin(bb: BbPluginApi) {
     usageCard: {
       type: "boolean",
       label: "Usage card",
-      description: "Show each account's 5-hour limit and reset, weekly limit, and 7-day activity above the sidebar footer.",
+      description: "Show each account's weekly limit and 7-day activity above the sidebar footer.",
       default: true,
     },
     systemCard: {

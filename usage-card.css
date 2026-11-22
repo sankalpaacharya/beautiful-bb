@@ -154,7 +154,8 @@ section:has(> div > div > .bbb-card) {
   font-variant-numeric: tabular-nums;
 }
 
-/* The 5-hour bar leads; weekly is a short second bar beside it. */
+/* An account with a 5-hour limit gets a short second bar beside the weekly
+   one. Its figures live only in the row's tooltip. */
 .bbb-pair {
   display: flex;
   align-items: center;

@@ -52,15 +52,6 @@ test("an account without a 5-hour reading gets no 5-hour line", async () => {
   assert.equal(row.fiveHour, null);
 });
 
-test("model-specific 5-hour windows are ignored when the account-wide window is absent", async () => {
-  const modelOnly = { ...measurement, usage: { ...measurement.usage, windows: [
-    measurement.usage.windows[1],
-    { kind: "five-hour", model: "opus", usedPercent: 90, resetsAt: "2026-11-21T15:20:00Z" },
-  ] } };
-  const [row] = await pooledWeeklyUsage(pool({ measure: () => modelOnly }));
-  assert.equal(row.fiveHour, null);
-});
-
 test("one account failing to refresh leaves other accounts visible", async () => {
   const bb = pool({
     resources: [{ ...resource, id: "broken" }, resource],

@@ -1,7 +1,8 @@
 // Beautiful bb frontend entry. Registers every piece of the plugin: the PRs
 // card (prs-card.tsx), the system card (live CPU and memory) and the usage card
-// above the sidebar footer (one line per account: logo, 5-hour limit first,
-// weekly beside it, 7-day activity bars, and time to reset), the home wallpaper and greeting,
+// above the sidebar footer (one line per account: logo, weekly limit bar, 7-day
+// activity bars, percent used, time to reset; a short 5-hour bar beside the
+// weekly one when the account reports one), the home wallpaper and greeting,
 // the settings page, the effects overlay, link previews in messages, and
 // command-menu actions.
 import { useCallback, useEffect, useState } from "react";
@@ -107,26 +108,30 @@ function HarnessRow({ h, now }: { h: HarnessUsage; now: number }) {
   const five = h.fiveHour;
   const fiveResetsAt = five ? Date.parse(five.resetsAt) : 0;
   const limits = five
-    ? `5-hour: ${five.usedPercent}% · resets in ${until(fiveResetsAt - now)} (${clock.format(fiveResetsAt)})\nWeekly: ${h.usedPercent}% · resets ${dayTime.format(resetsAt)}`
-    : `Weekly: ${h.usedPercent}% · resets ${dayTime.format(resetsAt)}`;
+    ? `Weekly: ${h.usedPercent}% · resets ${dayTime.format(resetsAt)}\n5-hour limit: ${five.usedPercent}% · resets in ${until(fiveResetsAt - now)} (${clock.format(fiveResetsAt)})`
+    : null;
   return (
     <li
       className="bbb-row"
-      title={`${name}\n${limits}`}
-      aria-label={`${name}: ${limits.replace("\n", ", ")}.`}
+      title={limits ? `${name}\n${limits}` : name}
+      aria-label={limits
+        ? `${name}: ${limits.replace("\n", ", ")}.`
+        : `${name}: ${h.usedPercent}% of weekly limit used, resets ${dayTime.format(resetsAt)}.`}
     >
       <span className="bbb-icon" aria-hidden="true">
         <ProviderIcon providerKind="agent" provider={provider} />
       </span>
       {five ? (
         <span className="bbb-pair" aria-hidden="true">
-          <LimitBar usedPercent={five.usedPercent} />
-          <span className="bbb-five-bar"><LimitBar usedPercent={h.usedPercent} /></span>
+          <LimitBar usedPercent={h.usedPercent} />
+          <span className="bbb-five-bar"><LimitBar usedPercent={five.usedPercent} /></span>
         </span>
       ) : <LimitBar usedPercent={h.usedPercent} />}
       <UsageBars daily={h.daily} historySince={h.historySince} providerName={h.name} now={now} />
-      <span className="bbb-pct" title={five ? `5-hour ${five.usedPercent}%; weekly ${h.usedPercent}%` : `Weekly ${h.usedPercent}%`}>{five ? `${five.usedPercent}%` : `${h.usedPercent}%`}</span>
-      <span className="bbb-in" title={limits}>{until((five ? fiveResetsAt : resetsAt) - now)}</span>
+      <span className="bbb-pct">{h.usedPercent}%</span>
+      <span className="bbb-in" title={five ? undefined : `Resets ${dayTime.format(resetsAt)}`}>
+        {until(resetsAt - now)}
+      </span>
     </li>
   );
 }

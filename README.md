@@ -89,9 +89,8 @@ out, the card shows one line saying so.
 ## Weekly usage card
 
 A compact card above the sidebar footer shows each signed-in account (Claude,
-Codex): the 5-hour limit first, with its time to reset, the weekly limit beside
-it, and a 7-day bar graph of daily activity. Accounts without a 5-hour window
-show their weekly limit and reset time. It stays dim until you hover or focus it.
+Codex): its weekly limit as a progress bar with the time until reset, and a
+7-day bar graph of daily activity. It stays dim until you hover or focus it.
 
 Accounts signed in through BB's Account Pooler also appear, one compact row per
 account, with account details on hover. The same account signed in locally and
