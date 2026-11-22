@@ -287,8 +287,8 @@ export default async function plugin(bb: BbPluginApi) {
       const accounts = uniqueWeeklyAccounts([...weekly, ...pooled]);
       const tokens = await tokensFor([...new Set(accounts.map((account) => account.providerId))]);
       const harnesses = await Promise.all(accounts.map(async ({ accountKey, ...account }) => {
-        const history = await trackUsage(bb.storage.kv, { ...account, accountKey }, now).catch(() => {
-          bb.log.warn(`Usage history for ${account.id} is unavailable.`);
+        const history = await trackUsage(bb.storage.kv, { ...account, accountKey }, now).catch((error: unknown) => {
+          bb.log.warn(`Usage history for ${account.id} is unavailable: ${error instanceof Error ? error.message : String(error)}`);
           return null;
         });
         const gains = history ? dailyGains(history, now) : new Array<null>(7).fill(null);
