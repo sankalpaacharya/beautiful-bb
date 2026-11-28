@@ -81,6 +81,14 @@ section:has(> div > div > .bbb-card) {
   list-style: none;
 }
 
+/* The header reuses the PRs card's (prs-card.css); the rows sit a row-gap below it. */
+.bbb-card > .bbb-prs-head + ul {
+  margin-top: 0.3125rem;
+}
+.bbb-card ul[hidden] {
+  display: none;
+}
+
 .bbb-row {
   display: grid;
   grid-template-columns: 0.75rem minmax(0, 1fr) 2.0625rem 2.25rem 3.125rem;

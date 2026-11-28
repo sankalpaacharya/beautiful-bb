@@ -53,11 +53,12 @@ const ICONS = {
   approved: "M20 6L9 17l-5-5",
   chevron: "M18 15l-6-6-6 6",
   clock: "M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20M12 6v6l4 2",
+  usage: "M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3",
 } as const;
 type IconName = keyof typeof ICONS;
 type Tone = "warn" | "bad";
 
-function Icon({ name, tone }: { name: IconName; tone?: Tone }) {
+export function Icon({ name, tone }: { name: IconName; tone?: Tone }) {
   return (
     <svg className="bbb-pr-icon" data-tone={tone} viewBox="0 0 24 24" aria-hidden="true">
       <path d={ICONS[name]} />

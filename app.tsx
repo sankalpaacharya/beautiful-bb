@@ -5,7 +5,7 @@
 // weekly one when the account reports one), the home wallpaper and greeting,
 // the settings page, the effects overlay, link previews in messages, and
 // command-menu actions.
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useState, type ReactNode } from "react";
 import {
   definePluginApp,
   experimental_ProviderIcon as ProviderIcon,
@@ -25,7 +25,7 @@ import { HomeGreeting } from "./greeting";
 import { WaveIcon } from "./wave-icon";
 import { nextTheme } from "./actions";
 import { toggleColorMode } from "./color-mode";
-import { PrsCard } from "./prs-card";
+import { Icon, PrsCard } from "./prs-card";
 import { SystemCard } from "./system-card";
 import { usePreferences } from "./use-preferences";
 import { until } from "./duration";
@@ -150,6 +150,36 @@ function readCachedUsage(): { harnesses: HarnessUsage[]; observedAt: number } | 
   }
 }
 
+const COLLAPSED_KEY = "beautiful-bb:usage-collapsed";
+
+function useStoredCollapsed() {
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSED_KEY) === "true");
+  const toggle = useCallback(() => {
+    setCollapsed((was) => {
+      localStorage.setItem(COLLAPSED_KEY, String(!was));
+      return !was;
+    });
+  }, []);
+  return [collapsed, toggle] as const;
+}
+
+/** Collapsed, the header keeps each account's logo and weekly percent. */
+function CollapsedSummary({ harnesses }: { harnesses: HarnessUsage[] }) {
+  const { providers } = useProviders();
+  return (
+    <span className="bbb-prs-summary">
+      {harnesses.map((h) => (
+        <span key={h.id}>
+          <span className="bbb-icon">
+            <ProviderIcon providerKind="agent" provider={providers.find((p) => p.id === h.providerId) ?? { id: h.providerId }} />
+          </span>
+          {h.usedPercent}%
+        </span>
+      ))}
+    </span>
+  );
+}
+
 function useWeeklyUsage() {
   const rpc = useRpc<typeof rpcContract>();
   const [cached] = useState(readCachedUsage);
@@ -180,6 +210,8 @@ function useWeeklyUsage() {
 function WeeklyUsageCard() {
   const { harnesses, now } = useWeeklyUsage();
   const tip = useUsageTip();
+  const [collapsed, toggleCollapsed] = useStoredCollapsed();
+  const listId = useId();
   if (harnesses === null) return <div className="bbb-card bbb-loading" aria-busy="true" />;
   if (!harnesses.length) {
     return (
@@ -190,7 +222,22 @@ function WeeklyUsageCard() {
   }
   return (
     <section className="bbb-card" aria-label="Weekly usage limits" tabIndex={0}>
-      <ul>
+      <button
+        type="button"
+        className="bbb-prs-head"
+        aria-expanded={!collapsed}
+        aria-controls={listId}
+        aria-label={collapsed
+          ? `Usage: ${harnesses.map((h) => `${h.accountLabel ? `${h.name} ${h.accountLabel}` : h.name} ${h.usedPercent}%`).join(", ")}`
+          : "Usage"}
+        onClick={toggleCollapsed}
+      >
+        <Icon name="usage" />
+        <span className="bbb-prs-label">Usage</span>
+        {collapsed ? <CollapsedSummary harnesses={harnesses} /> : <span className="bbb-prs-summary" />}
+        <Icon name="chevron" />
+      </button>
+      <ul id={listId} hidden={collapsed}>
         {harnesses.map((harness) => <HarnessRow key={harness.id} h={harness} now={now} tip={tip} />)}
       </ul>
       {tip.layer}

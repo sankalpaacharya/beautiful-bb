@@ -91,6 +91,8 @@ out, the card shows one line saying so.
 A compact card above the sidebar footer shows each signed-in account (Claude,
 Codex): its weekly limit as a progress bar with the time until reset, and a
 7-day bar graph of daily activity. It stays dim until you hover or focus it.
+Its Usage header collapses the card to one line with each account's logo and
+weekly percent, and the card remembers that across reloads.
 
 Accounts signed in through BB's Account Pooler also appear, one compact row per
 account, with account details on hover. The same account signed in locally and
